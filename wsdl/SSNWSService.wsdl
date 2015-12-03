@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="SSNWSService" targetNamespace="http://ws.ssn/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://ws.ssn/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <wsdl:types>
+<schema xmlns="http://www.w3.org/2001/XMLSchema">
+  <import namespace="http://ws.ssn/" schemaLocation="SSNWSService_schema1.xsd"></import>
+</schema>
+  </wsdl:types>
+  <wsdl:message name="getUserDetailsResponse">
+    <wsdl:part name="parameters" element="tns:getUserDetailsResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getSportsResponse">
+    <wsdl:part name="parameters" element="tns:getSportsResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getSports">
+    <wsdl:part name="parameters" element="tns:getSports">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="registerUserResponse">
+    <wsdl:part name="parameters" element="tns:registerUserResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="updateUser">
+    <wsdl:part name="parameters" element="tns:updateUser">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="updateUserResponse">
+    <wsdl:part name="parameters" element="tns:updateUserResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getUserDetails">
+    <wsdl:part name="parameters" element="tns:getUserDetails">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="registerUser">
+    <wsdl:part name="parameters" element="tns:registerUser">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="SSNWS">
+    <wsdl:operation name="registerUser">
+      <wsdl:input name="registerUser" message="tns:registerUser">
+    </wsdl:input>
+      <wsdl:output name="registerUserResponse" message="tns:registerUserResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updateUser">
+      <wsdl:input name="updateUser" message="tns:updateUser">
+    </wsdl:input>
+      <wsdl:output name="updateUserResponse" message="tns:updateUserResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getUserDetails">
+      <wsdl:input name="getUserDetails" message="tns:getUserDetails">
+    </wsdl:input>
+      <wsdl:output name="getUserDetailsResponse" message="tns:getUserDetailsResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getSports">
+      <wsdl:input name="getSports" message="tns:getSports">
+    </wsdl:input>
+      <wsdl:output name="getSportsResponse" message="tns:getSportsResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="SSNWSServiceSoapBinding" type="tns:SSNWS">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="registerUser">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="registerUser">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="registerUserResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updateUser">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="updateUser">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="updateUserResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getSports">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getSports">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getSportsResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getUserDetails">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getUserDetails">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getUserDetailsResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="SSNWSService">
+    <wsdl:port name="SSNWSPort" binding="tns:SSNWSServiceSoapBinding">
+      <soap:address location="http://localhost:9090/SSNWSPort"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

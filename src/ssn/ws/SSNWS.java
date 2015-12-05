@@ -3,6 +3,8 @@ package ssn.ws;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -22,6 +24,8 @@ import ssn.beans.User;
 
 @WebService
 public class SSNWS {
+	
+	final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss.SSSX";
 	
 	@WebMethod
 	public Result<Integer> registerUser(User user)
@@ -358,6 +362,7 @@ public class SSNWS {
 			if ( cxt != null ) 
 			{			
 				DataSource ds = (DataSource) cxt.lookup( "java:jboss/PostgreSQL/SSN");
+				DateFormat df = new SimpleDateFormat(TIME_FORMAT);
 				
 				if ( ds == null ) 
 				{
@@ -365,9 +370,9 @@ public class SSNWS {
 				}
 				Connection connection = ds.getConnection();
 				Statement stm = connection.createStatement(); 
-				String sql = "insert into reporttypes (idevent, idfield, startdate, enddate, confirmed, type) values "
-						+ "(" + reservation.getIdEvent() + "," + reservation.getIdField() + ",'" + reservation.getStartDate().getTime() + "','" 
-						+ reservation.getEndDate().getTime() + "'," + (reservation.isConfirmed() ? 1 : 0) + "," + reservation.getType() + ")";
+				String sql = "insert into reservations (" + (reservation.getIdEvent() > 0 ? "idevent," : "") + "idfield, startdate, enddate, comfirmed, type) values "
+						+ "(" + (reservation.getIdEvent() > 0 ? reservation.getIdEvent() + "," : "") + reservation.getIdField() + ",'" + df.format(new Date(reservation.getStartDate())) + "','" 
+						+ df.format(new Date(reservation.getEndDate())) + "'," + (reservation.isConfirmed() ? "'1'" : "'0'") + "," + reservation.getType() + ")";
 				stm.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
 				ResultSet rs;
 				rs = stm.getGeneratedKeys();
@@ -412,8 +417,8 @@ public class SSNWS {
 					r.setIdReservation(rs.getInt("idreservation"));
 					r.setIdEvent(rs.getInt("idevent"));
 					r.setIdField(rs.getInt("idfield"));
-					r.setStartDate(rs.getDate("startdate"));
-					r.setEndDate(rs.getDate("enddate"));
+					r.setStartDate(rs.getDate("startdate").getTime());
+					r.setEndDate(rs.getDate("enddate").getTime());
 					r.setConfirmed(rs.getBoolean("comfirmed"));
 					r.setType(rs.getInt("type"));
 					result.addData(r);

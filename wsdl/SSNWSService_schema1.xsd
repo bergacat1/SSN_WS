@@ -250,16 +250,13 @@
 <xs:complexType name="reservation">
     <xs:sequence>
       <xs:element name="confirmed" type="xs:boolean"/>
-      <xs:element minOccurs="0" name="endDate" type="tns:date"/>
+      <xs:element name="endDate" type="xs:long"/>
       <xs:element name="idEvent" type="xs:int"/>
       <xs:element name="idField" type="xs:int"/>
       <xs:element name="idReservation" type="xs:int"/>
-      <xs:element minOccurs="0" name="startDate" type="tns:date"/>
+      <xs:element name="startDate" type="xs:long"/>
       <xs:element name="type" type="xs:int"/>
     </xs:sequence>
-  </xs:complexType>
-<xs:complexType name="date">
-    <xs:sequence/>
   </xs:complexType>
 <xs:complexType name="updateFieldSport">
     <xs:sequence>

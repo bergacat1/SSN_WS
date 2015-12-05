@@ -2,7 +2,7 @@ package ssn.beans;
 
 public class ManagerEntity {
 	private int idManagerEntity;
-	private User entityManager;
+	private int idUser;
 	private int type;
 	private String name;
 	private String address;
@@ -17,12 +17,6 @@ public class ManagerEntity {
 	}
 	public void setIdManagerEntity(int idManagerEntity) {
 		this.idManagerEntity = idManagerEntity;
-	}
-	public User getEntityManager() {
-		return entityManager;
-	}
-	public void setEntityManager(User entityManager) {
-		this.entityManager = entityManager;
 	}
 	public int getType() {
 		return type;
@@ -77,5 +71,11 @@ public class ManagerEntity {
 	}
 	public void setWeb(String web) {
 		this.web = web;
+	}
+	public int getIdUser() {
+		return idUser;
+	}
+	public void setIdUser(int idUser) {
+		this.idUser = idUser;
 	}
 }

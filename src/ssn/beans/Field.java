@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Field {
 	private int idField;
-	private ManagerEntity managerEntity;
+	private int idManagerEntity;
 	private String name;
 	private List<FieldSports> sports;
 	
@@ -22,14 +22,6 @@ public class Field {
 		this.idField = idField;
 	}
 
-	public ManagerEntity getManagerEntity() {
-		return managerEntity;
-	}
-
-	public void setManagerEntity(ManagerEntity managerEntity) {
-		this.managerEntity = managerEntity;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -44,5 +36,13 @@ public class Field {
 
 	public void setSports(List<FieldSports> sports) {
 		this.sports = sports;
+	}
+
+	public int getIdManagerEntity() {
+		return idManagerEntity;
+	}
+
+	public void setIdManagerEntity(int idManagerEntity) {
+		this.idManagerEntity = idManagerEntity;
 	}
 }

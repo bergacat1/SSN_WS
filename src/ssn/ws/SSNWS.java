@@ -12,6 +12,7 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 import ssn.beans.Field;
+import ssn.beans.FieldSports;
 import ssn.beans.ManagerEntity;
 import ssn.beans.ReportType;
 import ssn.beans.Reservation;
@@ -161,7 +162,7 @@ public class SSNWS {
 				
 				Connection connection = ds.getConnection();
 				Statement stm = connection.createStatement(); 
-				ResultSet rs = stm.executeQuery("select * from ssn.sports");
+				ResultSet rs = stm.executeQuery("select * from sports");
 				
 				Sport s;
 				while(rs.next()){
@@ -185,9 +186,9 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result<ManagerEntity> getManagerEntitiesBySport(int idSport)
+	public Result<Sport> getSportById(int idSport)
 	{
-		Result<ManagerEntity> result = new Result<>();
+		Result<Sport> result = new Result<>();
 		try     	
 		{
 			InitialContext cxt = new InitialContext();
@@ -202,37 +203,16 @@ public class SSNWS {
 				
 				Connection connection = ds.getConnection();
 				Statement stm = connection.createStatement(); 
-				ResultSet rs = stm.executeQuery("select * from ssn.managerentity me, ssn.users u "
-												+ "where me.iduser = u.iduser and exists "
-														+ "(select * from fields f, sportfield sf, sport s where f.idmanagerentity = me.idmanagerentity"
-														+ " and f.idfield = sf.idfield and sf.idsport = s.idsport and s.idsport = idSport)");
+				ResultSet rs = stm.executeQuery("select * from sports where idsport = " + idSport);
 				
-				ManagerEntity me;
-				User u;
+				Sport s;
 				while(rs.next()){
-					u = new User();
-					u.setId(rs.getInt("userid"));					
-					u.setEmail(rs.getString("email"));
-					u.setName(rs.getString("name"));
-					u.setSurname1(rs.getString("surname1"));
-					u.setSurname2(rs.getString("surname2"));
-					u.setType(rs.getInt("type"));
-					u.setUsername(rs.getString("username"));
-					u.setTelephone(rs.getInt("telephone"));
-					u.setCurrentAccount(rs.getInt("currentaccount"));
-					
-					me = new ManagerEntity();
-					me.setEntityManager(u);
-					me.setType(rs.getInt("type"));
-					me.setName(rs.getString("name"));
-					me.setAddress(rs.getString("address"));
-					me.setCity(rs.getString("city"));
-					me.setLatitude(rs.getDouble("latitude"));
-					me.setLongitude(rs.getDouble("longitude"));
-					me.setTelephone(rs.getInt("telephone"));
-					me.setEmail(rs.getString("email"));
-					me.setWeb(rs.getString("email"));
-					result.addData(me);
+					s= new Sport();
+					s.setIdSport(rs.getInt("idsport"));
+					s.setName(rs.getString("name"));
+					s.setMinPlayers(rs.getInt("minplayers"));
+					s.setMaxPlayers(rs.getInt("maxplayers"));
+					result.addData(s);
 				}
 
 				connection.close();
@@ -242,11 +222,11 @@ public class SSNWS {
 		}catch(Exception e)
 		{
 			e.printStackTrace();
-			result.setValid(false);
-			result.setError(e.getMessage());
 		}
 		return result;
 	}
+	
+	
 	
 	@WebMethod
 	public Result<Integer> createEvent(int idCreator, int idSport, int minPlayers, int maxPlayers, Date startDateTime, Date endDateTime, 
@@ -295,54 +275,750 @@ public class SSNWS {
 	@WebMethod
 	public Result<Integer> createReportType(ReportType reportType)
 	{
-		return null;
+		Result<Integer> result = new Result<>();
+		try     
+		{
+			InitialContext cxt = new InitialContext();
+			if ( cxt != null ) 
+			{			
+				DataSource ds = (DataSource) cxt.lookup( "java:jboss/PostgreSQL/SSN");
+				
+				if ( ds == null ) 
+				{
+			 		System.out.print("Data source no trobat");
+				}
+				Connection connection = ds.getConnection();
+				Statement stm = connection.createStatement(); 
+				String sql = "insert into reporttypes (name, severity) values "
+						+ "('" + reportType.getName() + "'," + reportType.getSeverity() + ")";
+				stm.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+				ResultSet rs;
+				rs = stm.getGeneratedKeys();
+				rs.next();
+				result.addData(new Integer(rs.getInt(1)));
+				connection.close();
+				stm.close();
+			}   
+					
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+			result.setValid(false);
+			result.setError(e.getMessage());
+		}
+		return result;
 	}
 	
 	@WebMethod
 	public Result<Integer> createSport(Sport sport)
 	{
-		return null;
+		Result<Integer> result = new Result<>();
+		try     
+		{
+			InitialContext cxt = new InitialContext();
+			if ( cxt != null ) 
+			{			
+				DataSource ds = (DataSource) cxt.lookup( "java:jboss/PostgreSQL/SSN");
+				
+				if ( ds == null ) 
+				{
+			 		System.out.print("Data source no trobat");
+				}
+				Connection connection = ds.getConnection();
+				Statement stm = connection.createStatement(); 
+				String sql = "insert into sports (name, minplayers, maxplayers) values "
+						+ "('" + sport.getName() + "'," + sport.getMinPlayers() + "," + sport.getMaxPlayers() + ")";
+				stm.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+				ResultSet rs;
+				rs = stm.getGeneratedKeys();
+				rs.next();
+				result.addData(new Integer(rs.getInt(1)));
+				connection.close();
+				stm.close();
+			}   
+					
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+			result.setValid(false);
+			result.setError(e.getMessage());
+		}
+		return result;
 	}
 	
-	@WebMethod
-	public Result<Integer> createManagerEntity(ManagerEntity me)
-	{
-		return null;
-	}
+	
 	
 	@WebMethod
 	public Result<Integer> addReservation(Reservation reservation)
 	{
-		return null;
+		Result<Integer> result = new Result<>();
+		try     
+		{
+			InitialContext cxt = new InitialContext();
+			if ( cxt != null ) 
+			{			
+				DataSource ds = (DataSource) cxt.lookup( "java:jboss/PostgreSQL/SSN");
+				
+				if ( ds == null ) 
+				{
+			 		System.out.print("Data source no trobat");
+				}
+				Connection connection = ds.getConnection();
+				Statement stm = connection.createStatement(); 
+				String sql = "insert into reporttypes (idevent, idfield, startdate, enddate, confirmed, type) values "
+						+ "(" + reservation.getIdEvent() + "," + reservation.getIdField() + ",'" + reservation.getStartDate().getTime() + "','" 
+						+ reservation.getEndDate().getTime() + "'," + (reservation.isConfirmed() ? 1 : 0) + "," + reservation.getType() + ")";
+				stm.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+				ResultSet rs;
+				rs = stm.getGeneratedKeys();
+				rs.next();
+				result.addData(new Integer(rs.getInt(1)));
+				connection.close();
+				stm.close();
+			}   
+					
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+			result.setValid(false);
+			result.setError(e.getMessage());
+		}
+		return result;
 	}
 	
 	@WebMethod
 	public Result<Reservation> getReservationsByField(int idField)
 	{
-		return null;
+		Result<Reservation> result = new Result<>();
+		try     	
+		{
+			InitialContext cxt = new InitialContext();
+			if ( cxt != null ) 
+			{			
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgreSQL/SSN");
+				
+				if ( ds == null ) 
+				{
+			 		System.out.print("Data source no trobat");
+				}
+				
+				Connection connection = ds.getConnection();
+				Statement stm = connection.createStatement(); 
+				ResultSet rs = stm.executeQuery("select * from reservations");
+				
+				Reservation r;
+				while(rs.next()){
+					r= new Reservation();
+					r.setIdReservation(rs.getInt("idreservation"));
+					r.setIdEvent(rs.getInt("idevent"));
+					r.setIdField(rs.getInt("idfield"));
+					r.setStartDate(rs.getDate("startdate"));
+					r.setEndDate(rs.getDate("enddate"));
+					r.setConfirmed(rs.getBoolean("comfirmed"));
+					r.setType(rs.getInt("type"));
+					result.addData(r);
+				}
+
+				connection.close();
+				stm.close();
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+			result.setValid(false);
+			result.setError(e.getMessage());
+		}
+		return result;
 	}
 	
 	@WebMethod
-	public Result<Field> getFieldsByManagerEntity(int idManagerEntity)
-	{
-		return null;
-	}
-	
-	@WebMethod
-	public Result addFieldSport(int idField, int idSport, double pricePerHour)
-	{
-		return null;
+	public Result deleteReservation(int idReservation){
+		Result result = new Result();
+		try     	
+		{
+			InitialContext cxt = new InitialContext();
+			if ( cxt != null ) 
+			{			
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgreSQL/SSN");
+				
+				if ( ds == null ) 
+				{
+			 		System.out.print("Data source no tr1obat");
+				}
+				
+				Connection connection = ds.getConnection();
+				Statement stm = connection.createStatement(); 
+				stm.executeUpdate("delete from reservations where idreservation = " + idReservation);	
+				connection.close();
+				stm.close();
+			}   
+					
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+			result.setValid(false);
+			result.setError(e.getMessage());
+		}
+		return result;
 	}
 	
 	@WebMethod
 	public Result<Integer> addField(Field field)
 	{
-		return null;
+		Result<Integer> result = new Result<>();
+		try     
+		{
+			InitialContext cxt = new InitialContext();
+			if ( cxt != null ) 
+			{			
+				DataSource ds = (DataSource) cxt.lookup( "java:jboss/PostgreSQL/SSN");
+				
+				if ( ds == null ) 
+				{
+			 		System.out.print("Data source no trobat");
+				}
+				Connection connection = ds.getConnection();
+				Statement stm = connection.createStatement(); 
+				String sql = "insert into fields (idmanagerentity, name) values "
+						+ "(" + field.getIdManagerEntity() + ",'" + field.getName() + "')";
+				stm.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+				ResultSet rs;
+				rs = stm.getGeneratedKeys();
+				rs.next();
+				result.addData(new Integer(rs.getInt(1)));
+				connection.close();
+				stm.close();
+			}   
+					
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+			result.setValid(false);
+			result.setError(e.getMessage());
+		}
+		return result;
+	}
+	
+	@WebMethod
+	public Result<Field> getFieldById(int idField)
+	{
+		Result<Field> result = new Result<>();
+		try     	
+		{
+			InitialContext cxt = new InitialContext();
+			if ( cxt != null ) 
+			{			
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgreSQL/SSN");
+				
+				if ( ds == null ) 
+				{
+			 		System.out.print("Data source no trobat");
+				}
+				
+				Connection connection = ds.getConnection();
+				Statement stm = connection.createStatement(); 
+				ResultSet rs = stm.executeQuery("select * from fields where idfield = " + idField);
+				
+				Field f;
+				FieldSports fs;
+				rs.next();
+				f = new Field();
+				f.setIdField(rs.getInt("idfield"));
+				f.setIdManagerEntity(rs.getInt("idmanagerentity"));
+				f.setName(rs.getString("name"));
+				rs = stm.executeQuery("select sf.*, s.name from sportfield sf, sports s where sf.idsport = s.idsport and idfield = " + idField);
+				while(rs.next()){
+					fs = new FieldSports();
+					fs.setHourPrice(rs.getDouble("hourprice"));
+					fs.setIdSport(rs.getInt("idsport"));
+					fs.setSportName(rs.getString("name"));
+					f.getSports().add(fs);
+				}
+				result.addData(f);
+				
+
+				connection.close();
+				stm.close();
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+			result.setValid(false);
+			result.setError(e.getMessage());
+		}
+		return result;
+	}
+	
+	@WebMethod
+	public Result<Field> getFieldsByManagerEntity(int idManagerEntity)
+	{
+		Result<Field> result = new Result<>();
+		try     	
+		{
+			InitialContext cxt = new InitialContext();
+			if ( cxt != null ) 
+			{			
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgreSQL/SSN");
+				
+				if ( ds == null ) 
+				{
+			 		System.out.print("Data source no trobat");
+				}
+				
+				Connection connection = ds.getConnection();
+				Statement stm = connection.createStatement(); 
+				ResultSet rs = stm.executeQuery("select * from fields where idmanagerentity = " + idManagerEntity);
+				
+				Field f;
+				FieldSports fs;
+				while(rs.next()){
+					f= new Field();
+					f.setIdField(rs.getInt("idfield"));
+					f.setIdManagerEntity(rs.getInt("idmanagerentity"));
+					f.setName(rs.getString("name"));
+					result.addData(f);
+				}
+				for (Field field : result.getData()) {
+					rs = stm.executeQuery("select sf.*, s.name from sportfield sf, sports s where sf.idsport = s.idsport and idfield = " + field.getIdField());
+					while(rs.next()){
+						fs = new FieldSports();
+						fs.setHourPrice(rs.getDouble("hourprice"));
+						fs.setIdSport(rs.getInt("idsport"));
+						fs.setSportName(rs.getString("name"));
+						field.getSports().add(fs);
+					}
+				}			
+
+				connection.close();
+				stm.close();
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+			result.setValid(false);
+			result.setError(e.getMessage());
+		}
+		return result;
+	}
+
+	@WebMethod
+	public Result<Integer> updateField(Field field)
+	{
+		Result<Integer> result = new Result<>();
+		try     
+		{
+			InitialContext cxt = new InitialContext();
+			if ( cxt != null ) 
+			{			
+				DataSource ds = (DataSource) cxt.lookup( "java:jboss/PostgreSQL/SSN");
+				
+				if ( ds == null ) 
+				{
+			 		System.out.print("Data source no trobat");
+				}
+				Connection connection = ds.getConnection();
+				Statement stm = connection.createStatement(); 
+				String sql = "update fields set idmanagerentity=" + field.getIdManagerEntity() + ",name='" + field.getName() 
+						+ "' where idfield = " + field.getIdField();
+				stm.executeUpdate(sql);
+		
+				connection.close();
+				stm.close();
+			}   
+					
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+			result.setValid(false);
+			result.setError(e.getMessage());
+		}
+		return result;
+	}
+	
+	@WebMethod
+	public Result deleteField(int idField){
+		Result result = new Result();
+		try     	
+		{
+			InitialContext cxt = new InitialContext();
+			if ( cxt != null ) 
+			{			
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgreSQL/SSN");
+				
+				if ( ds == null ) 
+				{
+			 		System.out.print("Data source no tr1obat");
+				}
+				
+				Connection connection = ds.getConnection();
+				Statement stm = connection.createStatement(); 
+				stm.executeUpdate("delete from fields where idfield = " + idField);	
+				stm.executeUpdate("delete from sportfield where idfield = " + idField);
+				connection.close();
+				stm.close();
+			}   
+					
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+			result.setValid(false);
+			result.setError(e.getMessage());
+		}
+		return result;
+	}
+
+	@WebMethod
+	public Result addFieldSport(int idField, int idSport, double pricePerHour)
+	{
+		Result result = new Result();
+		try     
+		{
+			InitialContext cxt = new InitialContext();
+			if ( cxt != null ) 
+			{			
+				DataSource ds = (DataSource) cxt.lookup( "java:jboss/PostgreSQL/SSN");
+				
+				if ( ds == null ) 
+				{
+			 		System.out.print("Data source no trobat");
+				}
+				Connection connection = ds.getConnection();
+				Statement stm = connection.createStatement(); 
+				String sql = "insert into sportfield (idfield, idsport, hourprice) values "
+						+ "(" + idField + "," + idSport + "," + pricePerHour + ")";
+				stm.executeUpdate(sql);
+				connection.close();
+				stm.close();
+			}   
+					
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+			result.setValid(false);
+			result.setError(e.getMessage());
+		}
+		return result;
+	}
+	
+	@WebMethod
+	public Result updateFieldSport(int idField, int idSport, double pricePerHour)
+	{
+		Result result = new Result();
+		try     
+		{
+			InitialContext cxt = new InitialContext();
+			if ( cxt != null ) 
+			{			
+				DataSource ds = (DataSource) cxt.lookup( "java:jboss/PostgreSQL/SSN");
+				
+				if ( ds == null ) 
+				{
+			 		System.out.print("Data source no trobat");
+				}
+				Connection connection = ds.getConnection();
+				Statement stm = connection.createStatement(); 
+				String sql = "update sportfield set hourprice=" + pricePerHour + " where idfield=" + idField + " and idsport = " + idSport;
+				stm.executeUpdate(sql);
+				connection.close();
+				stm.close();
+			}   
+					
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+			result.setValid(false);
+			result.setError(e.getMessage());
+		}
+		return result;
+	}
+	
+	@WebMethod
+	public Result deleteFieldSport(int idField, int idSport){
+		Result result = new Result();
+		try     	
+		{
+			InitialContext cxt = new InitialContext();
+			if ( cxt != null ) 
+			{			
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgreSQL/SSN");
+				
+				if ( ds == null ) 
+				{
+			 		System.out.print("Data source no tr1obat");
+				}
+				
+				Connection connection = ds.getConnection();
+				Statement stm = connection.createStatement(); 
+				stm.executeUpdate("delete from sportfield where idfield = " + idField + " and idsport = " + idSport);	
+				connection.close();
+				stm.close();
+			}   
+					
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+			result.setValid(false);
+			result.setError(e.getMessage());
+		}
+		return result;
+	}
+	
+	@WebMethod
+	public Result<Integer> createManagerEntity(ManagerEntity me)
+	{
+		Result<Integer> result = new Result<>();
+		try     
+		{
+			InitialContext cxt = new InitialContext();
+			if ( cxt != null ) 
+			{			
+				DataSource ds = (DataSource) cxt.lookup( "java:jboss/PostgreSQL/SSN");
+				
+				if ( ds == null ) 
+				{
+			 		System.out.print("Data source no trobat");
+				}
+				Connection connection = ds.getConnection();
+				Statement stm = connection.createStatement(); 
+				String sql = "insert into managerentity (iduser, type, name, address, city, latitude, longitude, telephone, email, web) values "
+						+ "(" + me.getIdUser() + "," + me.getType() + ",'" + me.getName() + "','" + me.getAddress()  
+						+ "','" + me.getCity() + "'," + me.getLatitude() + "," + me.getLongitude() + "," + me.getTelephone() + ",'" 
+						+ me.getEmail() + "','" + me.getWeb() + "')";
+				stm.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+				ResultSet rs;
+				rs = stm.getGeneratedKeys();
+				rs.next();
+				result.addData(new Integer(rs.getInt(1)));
+				connection.close();
+				stm.close();
+			}   
+					
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+			result.setValid(false);
+			result.setError(e.getMessage());
+		}
+		return result;
+	}
+	
+	@WebMethod
+	public Result updateManagerEntity(ManagerEntity me)
+	{
+		Result result = new Result<>();
+		try     
+		{
+			InitialContext cxt = new InitialContext();
+			if ( cxt != null ) 
+			{			
+				DataSource ds = (DataSource) cxt.lookup( "java:jboss/PostgreSQL/SSN");
+				
+				if ( ds == null ) 
+				{
+			 		System.out.print("Data source no trobat");
+				}
+				Connection connection = ds.getConnection();
+				Statement stm = connection.createStatement(); 
+				String sql = "update managerentity set "
+						+ "iduser=" + me.getIdUser() + ", type=" + me.getType() + ",name='" + me.getName() + "',address='" + me.getAddress()  
+						+ "',city='" + me.getCity() + "',latitude=" + me.getLatitude() + ",longitude=" + me.getLongitude() 
+						+ ",telephone=" + me.getTelephone() + ",email='" + me.getEmail() + "',web='" + me.getWeb() + "' where idmanagerentity = " + me.getIdManagerEntity();
+				stm.executeUpdate(sql);
+				connection.close();
+				stm.close();
+			}   
+					
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+			result.setValid(false);
+			result.setError(e.getMessage());
+		}
+		return result;
 	}
 	
 	@WebMethod
 	public Result<ManagerEntity> getManagerEntities()
 	{
-		return null;
+		Result<ManagerEntity> result = new Result<>();
+		try     	
+		{
+			InitialContext cxt = new InitialContext();
+			if ( cxt != null ) 
+			{			
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgreSQL/SSN");
+				
+				if ( ds == null ) 
+				{
+			 		System.out.print("Data source no trobat");
+				}
+				
+				Connection connection = ds.getConnection();
+				Statement stm = connection.createStatement(); 
+				ResultSet rs = stm.executeQuery("select * from managerentity ");
+				
+				ManagerEntity me;
+				while(rs.next()){
+					
+					me = new ManagerEntity();
+					me.setIdUser(rs.getInt("iduser"));
+					me.setType(rs.getInt("type"));
+					me.setName(rs.getString("name"));
+					me.setAddress(rs.getString("address"));
+					me.setCity(rs.getString("city"));
+					me.setLatitude(rs.getDouble("latitude"));
+					me.setLongitude(rs.getDouble("longitude"));
+					me.setTelephone(rs.getInt("telephone"));
+					me.setEmail(rs.getString("email"));
+					me.setWeb(rs.getString("email"));
+					result.addData(me);
+				}
+
+				connection.close();
+				stm.close();
+			}   
+					
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+			result.setValid(false);
+			result.setError(e.getMessage());
+		}
+		return result;
+	}
+	
+	@WebMethod
+	public Result<ManagerEntity> getManagerEntitiesById(int idManagerEntity)
+	{
+		Result<ManagerEntity> result = new Result<>();
+		try     	
+		{
+			InitialContext cxt = new InitialContext();
+			if ( cxt != null ) 
+			{			
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgreSQL/SSN");
+				
+				if ( ds == null ) 
+				{
+			 		System.out.print("Data source no trobat");
+				}
+				
+				Connection connection = ds.getConnection();
+				Statement stm = connection.createStatement(); 
+				ResultSet rs = stm.executeQuery("select * from managerentity where idmanagerentity = " + idManagerEntity);
+				
+				ManagerEntity me;
+				while(rs.next()){
+					
+					me = new ManagerEntity();
+					me.setIdUser(rs.getInt("iduser"));
+					me.setType(rs.getInt("type"));
+					me.setName(rs.getString("name"));
+					me.setAddress(rs.getString("address"));
+					me.setCity(rs.getString("city"));
+					me.setLatitude(rs.getDouble("latitude"));
+					me.setLongitude(rs.getDouble("longitude"));
+					me.setTelephone(rs.getInt("telephone"));
+					me.setEmail(rs.getString("email"));
+					me.setWeb(rs.getString("email"));
+					result.addData(me);
+				}
+
+				connection.close();
+				stm.close();
+			}   
+					
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+			result.setValid(false);
+			result.setError(e.getMessage());
+		}
+		return result;
+	}
+	
+	@WebMethod
+	public Result<ManagerEntity> getManagerEntitiesBySport(int idSport)
+	{
+		Result<ManagerEntity> result = new Result<>();
+		try     	
+		{
+			InitialContext cxt = new InitialContext();
+			if ( cxt != null ) 
+			{			
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgreSQL/SSN");
+				
+				if ( ds == null ) 
+				{
+			 		System.out.print("Data source no trobat");
+				}
+				
+				Connection connection = ds.getConnection();
+				Statement stm = connection.createStatement(); 
+				ResultSet rs = stm.executeQuery("select * from managerentity me "
+												+ "where exists "
+														+ "(select * from fields f, sportfield sf, sports s where f.idmanagerentity = me.idmanagerentity"
+														+ " and f.idfield = sf.idfield and sf.idsport = s.idsport and s.idsport = " + idSport + ")");
+				
+				ManagerEntity me;
+				while(rs.next()){
+					
+					me = new ManagerEntity();
+					me.setIdUser(rs.getInt("iduser"));
+					me.setType(rs.getInt("type"));
+					me.setName(rs.getString("name"));
+					me.setAddress(rs.getString("address"));
+					me.setCity(rs.getString("city"));
+					me.setLatitude(rs.getDouble("latitude"));
+					me.setLongitude(rs.getDouble("longitude"));
+					me.setTelephone(rs.getInt("telephone"));
+					me.setEmail(rs.getString("email"));
+					me.setWeb(rs.getString("email"));
+					result.addData(me);
+				}
+
+				connection.close();
+				stm.close();
+			}   
+					
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+			result.setValid(false);
+			result.setError(e.getMessage());
+		}
+		return result;
+	}
+	
+	@WebMethod
+	public Result deleteManagerEntity(int idManagerEntity){
+		Result result = new Result();
+		try     	
+		{
+			InitialContext cxt = new InitialContext();
+			if ( cxt != null ) 
+			{			
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgreSQL/SSN");
+				
+				if ( ds == null ) 
+				{
+			 		System.out.print("Data source no tr1obat");
+				}
+				
+				Connection connection = ds.getConnection();
+				Statement stm = connection.createStatement();
+				ResultSet rs = stm.executeQuery("select idfield from fields where idmanagerentity = " + idManagerEntity);
+				while(rs.next())
+					stm.executeUpdate("delete from sportfield where idfield = " + rs.getInt("idfield"));
+				stm.executeUpdate("delete from fields where idmanagerentity = " + idManagerEntity);	
+				stm.executeUpdate("delete from managerentity where idmanagerentity = " + idManagerEntity);
+				connection.close();
+				stm.close();
+			}   
+					
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+			result.setValid(false);
+			result.setError(e.getMessage());
+		}
+		return result;
 	}
 }

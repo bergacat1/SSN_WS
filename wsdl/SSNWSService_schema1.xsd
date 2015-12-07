@@ -21,16 +21,30 @@
 <xs:element name="deleteManagerEntityResponse" type="tns:deleteManagerEntityResponse"/>
 <xs:element name="deleteReservation" type="tns:deleteReservation"/>
 <xs:element name="deleteReservationResponse" type="tns:deleteReservationResponse"/>
+<xs:element name="getEventById" type="tns:getEventById"/>
+<xs:element name="getEventByIdResponse" type="tns:getEventByIdResponse"/>
+<xs:element name="getEvents" type="tns:getEvents"/>
+<xs:element name="getEventsByFilters" type="tns:getEventsByFilters"/>
+<xs:element name="getEventsByFiltersResponse" type="tns:getEventsByFiltersResponse"/>
+<xs:element name="getEventsByUser" type="tns:getEventsByUser"/>
+<xs:element name="getEventsByUserResponse" type="tns:getEventsByUserResponse"/>
+<xs:element name="getEventsHistoryByUser" type="tns:getEventsHistoryByUser"/>
+<xs:element name="getEventsHistoryByUserResponse" type="tns:getEventsHistoryByUserResponse"/>
+<xs:element name="getEventsResponse" type="tns:getEventsResponse"/>
 <xs:element name="getFieldById" type="tns:getFieldById"/>
 <xs:element name="getFieldByIdResponse" type="tns:getFieldByIdResponse"/>
 <xs:element name="getFieldsByManagerEntity" type="tns:getFieldsByManagerEntity"/>
 <xs:element name="getFieldsByManagerEntityResponse" type="tns:getFieldsByManagerEntityResponse"/>
 <xs:element name="getManagerEntities" type="tns:getManagerEntities"/>
+<xs:element name="getManagerEntitiesByEvent" type="tns:getManagerEntitiesByEvent"/>
+<xs:element name="getManagerEntitiesByEventResponse" type="tns:getManagerEntitiesByEventResponse"/>
 <xs:element name="getManagerEntitiesById" type="tns:getManagerEntitiesById"/>
 <xs:element name="getManagerEntitiesByIdResponse" type="tns:getManagerEntitiesByIdResponse"/>
 <xs:element name="getManagerEntitiesBySport" type="tns:getManagerEntitiesBySport"/>
 <xs:element name="getManagerEntitiesBySportResponse" type="tns:getManagerEntitiesBySportResponse"/>
 <xs:element name="getManagerEntitiesResponse" type="tns:getManagerEntitiesResponse"/>
+<xs:element name="getReportTypes" type="tns:getReportTypes"/>
+<xs:element name="getReportTypesResponse" type="tns:getReportTypesResponse"/>
 <xs:element name="getReservationsByField" type="tns:getReservationsByField"/>
 <xs:element name="getReservationsByFieldResponse" type="tns:getReservationsByFieldResponse"/>
 <xs:element name="getSportById" type="tns:getSportById"/>
@@ -39,8 +53,16 @@
 <xs:element name="getSportsResponse" type="tns:getSportsResponse"/>
 <xs:element name="getUserDetails" type="tns:getUserDetails"/>
 <xs:element name="getUserDetailsResponse" type="tns:getUserDetailsResponse"/>
+<xs:element name="getUsersByEvent" type="tns:getUsersByEvent"/>
+<xs:element name="getUsersByEventResponse" type="tns:getUsersByEventResponse"/>
+<xs:element name="joinEvent" type="tns:joinEvent"/>
+<xs:element name="joinEventResponse" type="tns:joinEventResponse"/>
+<xs:element name="leaveEvent" type="tns:leaveEvent"/>
+<xs:element name="leaveEventResponse" type="tns:leaveEventResponse"/>
 <xs:element name="registerUser" type="tns:registerUser"/>
 <xs:element name="registerUserResponse" type="tns:registerUserResponse"/>
+<xs:element name="reportUser" type="tns:reportUser"/>
+<xs:element name="reportUserResponse" type="tns:reportUserResponse"/>
 <xs:element name="updateField" type="tns:updateField"/>
 <xs:element name="updateFieldResponse" type="tns:updateFieldResponse"/>
 <xs:element name="updateFieldSport" type="tns:updateFieldSport"/>
@@ -49,9 +71,31 @@
 <xs:element name="updateManagerEntityResponse" type="tns:updateManagerEntityResponse"/>
 <xs:element name="updateUser" type="tns:updateUser"/>
 <xs:element name="updateUserResponse" type="tns:updateUserResponse"/>
-<xs:complexType name="registerUser">
+<xs:complexType name="deleteReservation">
     <xs:sequence>
-      <xs:element minOccurs="0" name="arg0" type="tns:user"/>
+      <xs:element name="arg0" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="deleteReservationResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="tns:result"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="result">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="data" nillable="true" type="xs:anyType"/>
+      <xs:element minOccurs="0" name="error" type="xs:string"/>
+      <xs:element name="valid" type="xs:boolean"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="getUsersByEvent">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="getUsersByEventResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="tns:result"/>
     </xs:sequence>
   </xs:complexType>
 <xs:complexType name="user">
@@ -67,59 +111,18 @@
       <xs:element minOccurs="0" name="username" type="xs:string"/>
     </xs:sequence>
   </xs:complexType>
-<xs:complexType name="registerUserResponse">
+<xs:complexType name="createSport">
     <xs:sequence>
-      <xs:element minOccurs="0" name="return" type="tns:result"/>
+      <xs:element minOccurs="0" name="arg0" type="tns:sport"/>
     </xs:sequence>
   </xs:complexType>
-<xs:complexType name="result">
+<xs:complexType name="sport">
     <xs:sequence>
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="data" nillable="true" type="xs:anyType"/>
-      <xs:element minOccurs="0" name="error" type="xs:string"/>
-      <xs:element name="valid" type="xs:boolean"/>
-    </xs:sequence>
-  </xs:complexType>
-<xs:complexType name="deleteReservation">
-    <xs:sequence>
-      <xs:element name="arg0" type="xs:int"/>
-    </xs:sequence>
-  </xs:complexType>
-<xs:complexType name="deleteReservationResponse">
-    <xs:sequence>
-      <xs:element minOccurs="0" name="return" type="tns:result"/>
-    </xs:sequence>
-  </xs:complexType>
-<xs:complexType name="getManagerEntities">
-    <xs:sequence/>
-  </xs:complexType>
-<xs:complexType name="getManagerEntitiesResponse">
-    <xs:sequence>
-      <xs:element minOccurs="0" name="return" type="tns:result"/>
-    </xs:sequence>
-  </xs:complexType>
-<xs:complexType name="managerEntity">
-    <xs:sequence>
-      <xs:element minOccurs="0" name="address" type="xs:string"/>
-      <xs:element minOccurs="0" name="city" type="xs:string"/>
-      <xs:element minOccurs="0" name="email" type="xs:string"/>
-      <xs:element name="idManagerEntity" type="xs:int"/>
-      <xs:element name="idUser" type="xs:int"/>
-      <xs:element name="latitude" type="xs:double"/>
-      <xs:element name="longitude" type="xs:double"/>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="fields" nillable="true" type="tns:field"/>
+      <xs:element name="idSport" type="xs:int"/>
+      <xs:element name="maxPlayers" type="xs:int"/>
+      <xs:element name="minPlayers" type="xs:int"/>
       <xs:element minOccurs="0" name="name" type="xs:string"/>
-      <xs:element name="telephone" type="xs:int"/>
-      <xs:element name="type" type="xs:int"/>
-      <xs:element minOccurs="0" name="web" type="xs:string"/>
-    </xs:sequence>
-  </xs:complexType>
-<xs:complexType name="getFieldById">
-    <xs:sequence>
-      <xs:element name="arg0" type="xs:int"/>
-    </xs:sequence>
-  </xs:complexType>
-<xs:complexType name="getFieldByIdResponse">
-    <xs:sequence>
-      <xs:element minOccurs="0" name="return" type="tns:result"/>
     </xs:sequence>
   </xs:complexType>
 <xs:complexType name="field">
@@ -135,40 +138,6 @@
       <xs:element name="hourPrice" type="xs:double"/>
       <xs:element name="idSport" type="xs:int"/>
       <xs:element minOccurs="0" name="sportName" type="xs:string"/>
-    </xs:sequence>
-  </xs:complexType>
-<xs:complexType name="addField">
-    <xs:sequence>
-      <xs:element minOccurs="0" name="arg0" type="tns:field"/>
-    </xs:sequence>
-  </xs:complexType>
-<xs:complexType name="addFieldResponse">
-    <xs:sequence>
-      <xs:element minOccurs="0" name="return" type="tns:result"/>
-    </xs:sequence>
-  </xs:complexType>
-<xs:complexType name="updateField">
-    <xs:sequence>
-      <xs:element minOccurs="0" name="arg0" type="tns:field"/>
-    </xs:sequence>
-  </xs:complexType>
-<xs:complexType name="updateFieldResponse">
-    <xs:sequence>
-      <xs:element minOccurs="0" name="return" type="tns:result"/>
-    </xs:sequence>
-  </xs:complexType>
-<xs:complexType name="createSport">
-    <xs:sequence>
-      <xs:element minOccurs="0" name="arg0" type="tns:sport"/>
-    </xs:sequence>
-  </xs:complexType>
-<xs:complexType name="sport">
-    <xs:sequence>
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="fields" nillable="true" type="tns:field"/>
-      <xs:element name="idSport" type="xs:int"/>
-      <xs:element name="maxPlayers" type="xs:int"/>
-      <xs:element name="minPlayers" type="xs:int"/>
-      <xs:element minOccurs="0" name="name" type="xs:string"/>
     </xs:sequence>
   </xs:complexType>
 <xs:complexType name="createSportResponse">
@@ -192,7 +161,178 @@
       <xs:element minOccurs="0" name="arg0" type="tns:managerEntity"/>
     </xs:sequence>
   </xs:complexType>
+<xs:complexType name="managerEntity">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="address" type="xs:string"/>
+      <xs:element minOccurs="0" name="city" type="xs:string"/>
+      <xs:element minOccurs="0" name="email" type="xs:string"/>
+      <xs:element name="idManagerEntity" type="xs:int"/>
+      <xs:element name="idUser" type="xs:int"/>
+      <xs:element name="latitude" type="xs:double"/>
+      <xs:element name="longitude" type="xs:double"/>
+      <xs:element minOccurs="0" name="name" type="xs:string"/>
+      <xs:element name="telephone" type="xs:int"/>
+      <xs:element name="type" type="xs:int"/>
+      <xs:element minOccurs="0" name="web" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
 <xs:complexType name="createManagerEntityResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="tns:result"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="registerUser">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="arg0" type="tns:user"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="registerUserResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="tns:result"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="joinEvent">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:int"/>
+      <xs:element name="arg1" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="joinEventResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="tns:result"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="getEventById">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="getEventByIdResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="tns:result"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="event">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="city" type="xs:string"/>
+      <xs:element name="endDate" type="xs:long"/>
+      <xs:element name="idCreator" type="xs:int"/>
+      <xs:element name="idEvent" type="xs:int"/>
+      <xs:element name="idSport" type="xs:int"/>
+      <xs:element name="latitude" type="xs:double"/>
+      <xs:element name="longitude" type="xs:double"/>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="managerEntities" nillable="true" type="xs:int"/>
+      <xs:element name="maxPlayers" type="xs:int"/>
+      <xs:element name="minPlayers" type="xs:int"/>
+      <xs:element name="range" type="xs:int"/>
+      <xs:element name="startDate" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="getManagerEntities">
+    <xs:sequence/>
+  </xs:complexType>
+<xs:complexType name="getManagerEntitiesResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="tns:result"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="getEventsByFilters">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:int"/>
+      <xs:element name="arg1" type="xs:int"/>
+      <xs:element name="arg2" type="xs:double"/>
+      <xs:element minOccurs="0" name="arg3" type="xs:dateTime"/>
+      <xs:element minOccurs="0" name="arg4" type="xs:dateTime"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="getEventsByFiltersResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="tns:result"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="getFieldById">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="getFieldByIdResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="tns:result"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="reportUser">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="arg0" type="tns:report"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="report">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="comment" type="xs:string"/>
+      <xs:element name="date" type="xs:long"/>
+      <xs:element name="idField" type="xs:int"/>
+      <xs:element name="idReport" type="xs:int"/>
+      <xs:element name="idReportType" type="xs:int"/>
+      <xs:element name="idReporter" type="xs:int"/>
+      <xs:element name="idUser" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="reportUserResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="tns:result"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="addField">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="arg0" type="tns:field"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="addFieldResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="tns:result"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="getManagerEntitiesByEvent">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="getManagerEntitiesByEventResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="tns:result"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="updateField">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="arg0" type="tns:field"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="updateFieldResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="tns:result"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="getReportTypes">
+    <xs:sequence/>
+  </xs:complexType>
+<xs:complexType name="getReportTypesResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="tns:result"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="reportType">
+    <xs:sequence>
+      <xs:element name="idReportType" type="xs:int"/>
+      <xs:element minOccurs="0" name="name" type="xs:string"/>
+      <xs:element name="severity" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="leaveEvent">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:int"/>
+      <xs:element name="arg1" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="leaveEventResponse">
     <xs:sequence>
       <xs:element minOccurs="0" name="return" type="tns:result"/>
     </xs:sequence>
@@ -217,22 +357,30 @@
       <xs:element minOccurs="0" name="return" type="tns:result"/>
     </xs:sequence>
   </xs:complexType>
+<xs:complexType name="getEventsByUser">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="getEventsByUserResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="tns:result"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="getEvents">
+    <xs:sequence/>
+  </xs:complexType>
+<xs:complexType name="getEventsResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="tns:result"/>
+    </xs:sequence>
+  </xs:complexType>
 <xs:complexType name="getSportById">
     <xs:sequence>
       <xs:element name="arg0" type="xs:int"/>
     </xs:sequence>
   </xs:complexType>
 <xs:complexType name="getSportByIdResponse">
-    <xs:sequence>
-      <xs:element minOccurs="0" name="return" type="tns:result"/>
-    </xs:sequence>
-  </xs:complexType>
-<xs:complexType name="getFieldsByManagerEntity">
-    <xs:sequence>
-      <xs:element name="arg0" type="xs:int"/>
-    </xs:sequence>
-  </xs:complexType>
-<xs:complexType name="getFieldsByManagerEntityResponse">
     <xs:sequence>
       <xs:element minOccurs="0" name="return" type="tns:result"/>
     </xs:sequence>
@@ -256,6 +404,16 @@
       <xs:element name="idReservation" type="xs:int"/>
       <xs:element name="startDate" type="xs:long"/>
       <xs:element name="type" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="getFieldsByManagerEntity">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="getFieldsByManagerEntityResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="tns:result"/>
     </xs:sequence>
   </xs:complexType>
 <xs:complexType name="updateFieldSport">
@@ -290,6 +448,16 @@
       <xs:element minOccurs="0" name="return" type="tns:result"/>
     </xs:sequence>
   </xs:complexType>
+<xs:complexType name="getEventsHistoryByUser">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="getEventsHistoryByUserResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="tns:result"/>
+    </xs:sequence>
+  </xs:complexType>
 <xs:complexType name="getSports">
     <xs:sequence/>
   </xs:complexType>
@@ -303,13 +471,6 @@
       <xs:element minOccurs="0" name="arg0" type="tns:reportType"/>
     </xs:sequence>
   </xs:complexType>
-<xs:complexType name="reportType">
-    <xs:sequence>
-      <xs:element name="idReportType" type="xs:int"/>
-      <xs:element minOccurs="0" name="name" type="xs:string"/>
-      <xs:element name="severity" type="xs:int"/>
-    </xs:sequence>
-  </xs:complexType>
 <xs:complexType name="createReportTypeResponse">
     <xs:sequence>
       <xs:element minOccurs="0" name="return" type="tns:result"/>
@@ -317,17 +478,7 @@
   </xs:complexType>
 <xs:complexType name="createEvent">
     <xs:sequence>
-      <xs:element name="arg0" type="xs:int"/>
-      <xs:element name="arg1" type="xs:int"/>
-      <xs:element name="arg2" type="xs:int"/>
-      <xs:element name="arg3" type="xs:int"/>
-      <xs:element minOccurs="0" name="arg4" type="xs:dateTime"/>
-      <xs:element minOccurs="0" name="arg5" type="xs:dateTime"/>
-      <xs:element minOccurs="0" name="arg6" type="xs:string"/>
-      <xs:element name="arg7" type="xs:float"/>
-      <xs:element name="arg8" type="xs:float"/>
-      <xs:element name="arg9" type="xs:int"/>
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="arg10" type="xs:int"/>
+      <xs:element minOccurs="0" name="arg0" type="tns:event"/>
     </xs:sequence>
   </xs:complexType>
 <xs:complexType name="createEventResponse">

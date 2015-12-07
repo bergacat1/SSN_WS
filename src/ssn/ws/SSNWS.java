@@ -914,6 +914,7 @@ public class SSNWS {
 				while(rs.next()){
 					
 					me = new ManagerEntity();
+					me.setIdManagerEntity(rs.getInt("idmanagerentity"));
 					me.setIdUser(rs.getInt("iduser"));
 					me.setType(rs.getInt("type"));
 					me.setName(rs.getString("name"));

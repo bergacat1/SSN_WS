@@ -21,6 +21,18 @@
     <wsdl:part name="parameters" element="tns:getSportByIdResponse">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="joinEvent">
+    <wsdl:part name="parameters" element="tns:joinEvent">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="leaveEventResponse">
+    <wsdl:part name="parameters" element="tns:leaveEventResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getEventsByFilters">
+    <wsdl:part name="parameters" element="tns:getEventsByFilters">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="updateFieldSport">
     <wsdl:part name="parameters" element="tns:updateFieldSport">
     </wsdl:part>
@@ -37,20 +49,28 @@
     <wsdl:part name="parameters" element="tns:addFieldSport">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="deleteManagerEntityResponse">
-    <wsdl:part name="parameters" element="tns:deleteManagerEntityResponse">
+  <wsdl:message name="getEventsByUser">
+    <wsdl:part name="parameters" element="tns:getEventsByUser">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="deleteFieldSportResponse">
-    <wsdl:part name="parameters" element="tns:deleteFieldSportResponse">
+  <wsdl:message name="deleteManagerEntityResponse">
+    <wsdl:part name="parameters" element="tns:deleteManagerEntityResponse">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="getManagerEntitiesByIdResponse">
     <wsdl:part name="parameters" element="tns:getManagerEntitiesByIdResponse">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="deleteFieldSportResponse">
+    <wsdl:part name="parameters" element="tns:deleteFieldSportResponse">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="getManagerEntitiesById">
     <wsdl:part name="parameters" element="tns:getManagerEntitiesById">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="reportUserResponse">
+    <wsdl:part name="parameters" element="tns:reportUserResponse">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="getManagerEntitiesResponse">
@@ -65,12 +85,16 @@
     <wsdl:part name="parameters" element="tns:addReservation">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="getManagerEntitiesBySport">
-    <wsdl:part name="parameters" element="tns:getManagerEntitiesBySport">
+  <wsdl:message name="getEventsHistoryByUserResponse">
+    <wsdl:part name="parameters" element="tns:getEventsHistoryByUserResponse">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="getManagerEntities">
     <wsdl:part name="parameters" element="tns:getManagerEntities">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getManagerEntitiesBySport">
+    <wsdl:part name="parameters" element="tns:getManagerEntitiesBySport">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="createManagerEntity">
@@ -85,6 +109,14 @@
     <wsdl:part name="parameters" element="tns:addField">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="getEventsByFiltersResponse">
+    <wsdl:part name="parameters" element="tns:getEventsByFiltersResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getManagerEntitiesByEventResponse">
+    <wsdl:part name="parameters" element="tns:getManagerEntitiesByEventResponse">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="getManagerEntitiesBySportResponse">
     <wsdl:part name="parameters" element="tns:getManagerEntitiesBySportResponse">
     </wsdl:part>
@@ -95,6 +127,14 @@
   </wsdl:message>
   <wsdl:message name="deleteManagerEntity">
     <wsdl:part name="parameters" element="tns:deleteManagerEntity">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getEventByIdResponse">
+    <wsdl:part name="parameters" element="tns:getEventByIdResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="joinEventResponse">
+    <wsdl:part name="parameters" element="tns:joinEventResponse">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="registerUser">
@@ -109,24 +149,28 @@
     <wsdl:part name="parameters" element="tns:getUserDetailsResponse">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="getReservationsByFieldResponse">
-    <wsdl:part name="parameters" element="tns:getReservationsByFieldResponse">
-    </wsdl:part>
-  </wsdl:message>
   <wsdl:message name="deleteFieldResponse">
     <wsdl:part name="parameters" element="tns:deleteFieldResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getReservationsByFieldResponse">
+    <wsdl:part name="parameters" element="tns:getReservationsByFieldResponse">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="addFieldSportResponse">
     <wsdl:part name="parameters" element="tns:addFieldSportResponse">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="deleteFieldSport">
-    <wsdl:part name="parameters" element="tns:deleteFieldSport">
+  <wsdl:message name="getEventsResponse">
+    <wsdl:part name="parameters" element="tns:getEventsResponse">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="getFieldByIdResponse">
     <wsdl:part name="parameters" element="tns:getFieldByIdResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deleteFieldSport">
+    <wsdl:part name="parameters" element="tns:deleteFieldSport">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="getFieldsByManagerEntity">
@@ -137,6 +181,10 @@
     <wsdl:part name="parameters" element="tns:getSportsResponse">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="getManagerEntitiesByEvent">
+    <wsdl:part name="parameters" element="tns:getManagerEntitiesByEvent">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="createManagerEntityResponse">
     <wsdl:part name="parameters" element="tns:createManagerEntityResponse">
     </wsdl:part>
@@ -145,8 +193,20 @@
     <wsdl:part name="parameters" element="tns:deleteField">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="getReportTypesResponse">
+    <wsdl:part name="parameters" element="tns:getReportTypesResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getEventsHistoryByUser">
+    <wsdl:part name="parameters" element="tns:getEventsHistoryByUser">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="getUserDetails">
     <wsdl:part name="parameters" element="tns:getUserDetails">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="reportUser">
+    <wsdl:part name="parameters" element="tns:reportUser">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="createSportResponse">
@@ -173,6 +233,10 @@
     <wsdl:part name="parameters" element="tns:addFieldResponse">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="leaveEvent">
+    <wsdl:part name="parameters" element="tns:leaveEvent">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="updateUser">
     <wsdl:part name="parameters" element="tns:updateUser">
     </wsdl:part>
@@ -185,16 +249,40 @@
     <wsdl:part name="parameters" element="tns:createEvent">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="getEvents">
+    <wsdl:part name="parameters" element="tns:getEvents">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getReportTypes">
+    <wsdl:part name="parameters" element="tns:getReportTypes">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="createEventResponse">
     <wsdl:part name="parameters" element="tns:createEventResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getUsersByEventResponse">
+    <wsdl:part name="parameters" element="tns:getUsersByEventResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getEventById">
+    <wsdl:part name="parameters" element="tns:getEventById">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="updateFieldSportResponse">
+    <wsdl:part name="parameters" element="tns:updateFieldSportResponse">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="updateFieldResponse">
     <wsdl:part name="parameters" element="tns:updateFieldResponse">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="updateFieldSportResponse">
-    <wsdl:part name="parameters" element="tns:updateFieldSportResponse">
+  <wsdl:message name="getEventsByUserResponse">
+    <wsdl:part name="parameters" element="tns:getEventsByUserResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getUsersByEvent">
+    <wsdl:part name="parameters" element="tns:getUsersByEvent">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="getSportById">
@@ -206,40 +294,16 @@
     </wsdl:part>
   </wsdl:message>
   <wsdl:portType name="SSNWS">
-    <wsdl:operation name="registerUser">
-      <wsdl:input name="registerUser" message="tns:registerUser">
-    </wsdl:input>
-      <wsdl:output name="registerUserResponse" message="tns:registerUserResponse">
-    </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="deleteReservation">
       <wsdl:input name="deleteReservation" message="tns:deleteReservation">
     </wsdl:input>
       <wsdl:output name="deleteReservationResponse" message="tns:deleteReservationResponse">
     </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="getManagerEntities">
-      <wsdl:input name="getManagerEntities" message="tns:getManagerEntities">
+    <wsdl:operation name="getUsersByEvent">
+      <wsdl:input name="getUsersByEvent" message="tns:getUsersByEvent">
     </wsdl:input>
-      <wsdl:output name="getManagerEntitiesResponse" message="tns:getManagerEntitiesResponse">
-    </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getFieldById">
-      <wsdl:input name="getFieldById" message="tns:getFieldById">
-    </wsdl:input>
-      <wsdl:output name="getFieldByIdResponse" message="tns:getFieldByIdResponse">
-    </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="addField">
-      <wsdl:input name="addField" message="tns:addField">
-    </wsdl:input>
-      <wsdl:output name="addFieldResponse" message="tns:addFieldResponse">
-    </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="updateField">
-      <wsdl:input name="updateField" message="tns:updateField">
-    </wsdl:input>
-      <wsdl:output name="updateFieldResponse" message="tns:updateFieldResponse">
+      <wsdl:output name="getUsersByEventResponse" message="tns:getUsersByEventResponse">
     </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="createSport">
@@ -260,6 +324,78 @@
       <wsdl:output name="createManagerEntityResponse" message="tns:createManagerEntityResponse">
     </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="registerUser">
+      <wsdl:input name="registerUser" message="tns:registerUser">
+    </wsdl:input>
+      <wsdl:output name="registerUserResponse" message="tns:registerUserResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="joinEvent">
+      <wsdl:input name="joinEvent" message="tns:joinEvent">
+    </wsdl:input>
+      <wsdl:output name="joinEventResponse" message="tns:joinEventResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getEventById">
+      <wsdl:input name="getEventById" message="tns:getEventById">
+    </wsdl:input>
+      <wsdl:output name="getEventByIdResponse" message="tns:getEventByIdResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getManagerEntities">
+      <wsdl:input name="getManagerEntities" message="tns:getManagerEntities">
+    </wsdl:input>
+      <wsdl:output name="getManagerEntitiesResponse" message="tns:getManagerEntitiesResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getEventsByFilters">
+      <wsdl:input name="getEventsByFilters" message="tns:getEventsByFilters">
+    </wsdl:input>
+      <wsdl:output name="getEventsByFiltersResponse" message="tns:getEventsByFiltersResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getFieldById">
+      <wsdl:input name="getFieldById" message="tns:getFieldById">
+    </wsdl:input>
+      <wsdl:output name="getFieldByIdResponse" message="tns:getFieldByIdResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="reportUser">
+      <wsdl:input name="reportUser" message="tns:reportUser">
+    </wsdl:input>
+      <wsdl:output name="reportUserResponse" message="tns:reportUserResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addField">
+      <wsdl:input name="addField" message="tns:addField">
+    </wsdl:input>
+      <wsdl:output name="addFieldResponse" message="tns:addFieldResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getManagerEntitiesByEvent">
+      <wsdl:input name="getManagerEntitiesByEvent" message="tns:getManagerEntitiesByEvent">
+    </wsdl:input>
+      <wsdl:output name="getManagerEntitiesByEventResponse" message="tns:getManagerEntitiesByEventResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updateField">
+      <wsdl:input name="updateField" message="tns:updateField">
+    </wsdl:input>
+      <wsdl:output name="updateFieldResponse" message="tns:updateFieldResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getReportTypes">
+      <wsdl:input name="getReportTypes" message="tns:getReportTypes">
+    </wsdl:input>
+      <wsdl:output name="getReportTypesResponse" message="tns:getReportTypesResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="leaveEvent">
+      <wsdl:input name="leaveEvent" message="tns:leaveEvent">
+    </wsdl:input>
+      <wsdl:output name="leaveEventResponse" message="tns:leaveEventResponse">
+    </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="getManagerEntitiesBySport">
       <wsdl:input name="getManagerEntitiesBySport" message="tns:getManagerEntitiesBySport">
     </wsdl:input>
@@ -272,22 +408,34 @@
       <wsdl:output name="updateManagerEntityResponse" message="tns:updateManagerEntityResponse">
     </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="getEventsByUser">
+      <wsdl:input name="getEventsByUser" message="tns:getEventsByUser">
+    </wsdl:input>
+      <wsdl:output name="getEventsByUserResponse" message="tns:getEventsByUserResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getEvents">
+      <wsdl:input name="getEvents" message="tns:getEvents">
+    </wsdl:input>
+      <wsdl:output name="getEventsResponse" message="tns:getEventsResponse">
+    </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="getSportById">
       <wsdl:input name="getSportById" message="tns:getSportById">
     </wsdl:input>
       <wsdl:output name="getSportByIdResponse" message="tns:getSportByIdResponse">
     </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="getFieldsByManagerEntity">
-      <wsdl:input name="getFieldsByManagerEntity" message="tns:getFieldsByManagerEntity">
-    </wsdl:input>
-      <wsdl:output name="getFieldsByManagerEntityResponse" message="tns:getFieldsByManagerEntityResponse">
-    </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="getReservationsByField">
       <wsdl:input name="getReservationsByField" message="tns:getReservationsByField">
     </wsdl:input>
       <wsdl:output name="getReservationsByFieldResponse" message="tns:getReservationsByFieldResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getFieldsByManagerEntity">
+      <wsdl:input name="getFieldsByManagerEntity" message="tns:getFieldsByManagerEntity">
+    </wsdl:input>
+      <wsdl:output name="getFieldsByManagerEntityResponse" message="tns:getFieldsByManagerEntityResponse">
     </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="updateFieldSport">
@@ -306,6 +454,12 @@
       <wsdl:input name="deleteField" message="tns:deleteField">
     </wsdl:input>
       <wsdl:output name="deleteFieldResponse" message="tns:deleteFieldResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getEventsHistoryByUser">
+      <wsdl:input name="getEventsHistoryByUser" message="tns:getEventsHistoryByUser">
+    </wsdl:input>
+      <wsdl:output name="getEventsHistoryByUserResponse" message="tns:getEventsHistoryByUserResponse">
     </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="getSports">
@@ -368,12 +522,75 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="createSport">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="createSport">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="createSportResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getUsersByEvent">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getUsersByEvent">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getUsersByEventResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteFieldSport">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="deleteFieldSport">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="deleteFieldSportResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createManagerEntity">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="createManagerEntity">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="createManagerEntityResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="registerUser">
       <soap:operation soapAction="" style="document"/>
       <wsdl:input name="registerUser">
         <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="registerUserResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getEventById">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getEventById">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getEventByIdResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="joinEvent">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="joinEvent">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="joinEventResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getEventsByFilters">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getEventsByFilters">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getEventsByFiltersResponse">
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
@@ -404,12 +621,21 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="createSport">
+    <wsdl:operation name="reportUser">
       <soap:operation soapAction="" style="document"/>
-      <wsdl:input name="createSport">
+      <wsdl:input name="reportUser">
         <soap:body use="literal"/>
       </wsdl:input>
-      <wsdl:output name="createSportResponse">
+      <wsdl:output name="reportUserResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getManagerEntitiesByEvent">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getManagerEntitiesByEvent">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getManagerEntitiesByEventResponse">
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
@@ -422,21 +648,21 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="createManagerEntity">
+    <wsdl:operation name="getReportTypes">
       <soap:operation soapAction="" style="document"/>
-      <wsdl:input name="createManagerEntity">
+      <wsdl:input name="getReportTypes">
         <soap:body use="literal"/>
       </wsdl:input>
-      <wsdl:output name="createManagerEntityResponse">
+      <wsdl:output name="getReportTypesResponse">
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="deleteFieldSport">
+    <wsdl:operation name="leaveEvent">
       <soap:operation soapAction="" style="document"/>
-      <wsdl:input name="deleteFieldSport">
+      <wsdl:input name="leaveEvent">
         <soap:body use="literal"/>
       </wsdl:input>
-      <wsdl:output name="deleteFieldSportResponse">
+      <wsdl:output name="leaveEventResponse">
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
@@ -449,12 +675,30 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="getEventsByUser">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getEventsByUser">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getEventsByUserResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="updateManagerEntity">
       <soap:operation soapAction="" style="document"/>
       <wsdl:input name="updateManagerEntity">
         <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="updateManagerEntityResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getEvents">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getEvents">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getEventsResponse">
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
@@ -509,6 +753,15 @@
         <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="deleteFieldResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getEventsHistoryByUser">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getEventsHistoryByUser">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getEventsHistoryByUserResponse">
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>

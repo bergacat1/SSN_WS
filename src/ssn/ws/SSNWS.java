@@ -1548,7 +1548,10 @@ public class SSNWS {
 				Statement stm = connection.createStatement();
 				ResultSet rs = stm.executeQuery("select idfield from fields where idmanagerentity = " + idManagerEntity);
 				while(rs.next())
+				{
 					stm.executeUpdate("delete from sportfield where idfield = " + rs.getInt("idfield"));
+					stm.executeUpdate("delete from reservations where idfield = " + rs.getInt("idfield"));
+				}
 				stm.executeUpdate("delete from fields where idmanagerentity = " + idManagerEntity);	
 				stm.executeUpdate("delete from managerentity where idmanagerentity = " + idManagerEntity);
 				connection.close();

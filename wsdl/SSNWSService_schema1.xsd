@@ -5,6 +5,8 @@
 <xs:element name="addFieldSportResponse" type="tns:addFieldSportResponse"/>
 <xs:element name="addReservation" type="tns:addReservation"/>
 <xs:element name="addReservationResponse" type="tns:addReservationResponse"/>
+<xs:element name="addReservations" type="tns:addReservations"/>
+<xs:element name="addReservationsResponse" type="tns:addReservationsResponse"/>
 <xs:element name="createEvent" type="tns:createEvent"/>
 <xs:element name="createEventResponse" type="tns:createEventResponse"/>
 <xs:element name="createManagerEntity" type="tns:createManagerEntity"/>
@@ -21,6 +23,8 @@
 <xs:element name="deleteManagerEntityResponse" type="tns:deleteManagerEntityResponse"/>
 <xs:element name="deleteReservation" type="tns:deleteReservation"/>
 <xs:element name="deleteReservationResponse" type="tns:deleteReservationResponse"/>
+<xs:element name="deleteReservations" type="tns:deleteReservations"/>
+<xs:element name="deleteReservationsResponse" type="tns:deleteReservationsResponse"/>
 <xs:element name="getEventById" type="tns:getEventById"/>
 <xs:element name="getEventByIdResponse" type="tns:getEventByIdResponse"/>
 <xs:element name="getEvents" type="tns:getEvents"/>
@@ -223,6 +227,7 @@
       <xs:element name="longitude" type="xs:double"/>
       <xs:element maxOccurs="unbounded" minOccurs="0" name="managerEntities" nillable="true" type="xs:int"/>
       <xs:element name="maxPlayers" type="xs:int"/>
+      <xs:element name="maxPrice" type="xs:double"/>
       <xs:element name="minPlayers" type="xs:int"/>
       <xs:element name="range" type="xs:int"/>
       <xs:element name="startDate" type="xs:long"/>
@@ -438,6 +443,16 @@
       <xs:element minOccurs="0" name="return" type="tns:result"/>
     </xs:sequence>
   </xs:complexType>
+<xs:complexType name="deleteReservations">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="arg0" type="tns:reservation"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="deleteReservationsResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="tns:result"/>
+    </xs:sequence>
+  </xs:complexType>
 <xs:complexType name="deleteField">
     <xs:sequence>
       <xs:element name="arg0" type="xs:int"/>
@@ -524,6 +539,16 @@
     </xs:sequence>
   </xs:complexType>
 <xs:complexType name="getManagerEntitiesByIdResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="tns:result"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="addReservations">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="arg0" type="tns:reservation"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="addReservationsResponse">
     <xs:sequence>
       <xs:element minOccurs="0" name="return" type="tns:result"/>
     </xs:sequence>

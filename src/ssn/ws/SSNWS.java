@@ -6,6 +6,7 @@ import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import javax.jws.WebMethod;
 import javax.jws.WebService;
@@ -883,6 +884,18 @@ public class SSNWS {
 	}
 	
 	@WebMethod
+	public Result<Integer> addReservations(List<Reservation> reservations)
+	{
+		Result<Integer> result = new Result<>();		
+		for (Reservation reservation : reservations) {
+			Result<Integer> auxResult = addReservation(reservation);
+			if(!auxResult.isValid())
+				result = auxResult;
+		}
+		return result;
+	}
+	
+	@WebMethod
 	public Result<Reservation> getReservationsByField(int idField)
 	{
 		Result<Reservation> result = new Result<>();
@@ -953,6 +966,18 @@ public class SSNWS {
 			e.printStackTrace();
 			result.setValid(false);
 			result.setError(e.getMessage());
+		}
+		return result;
+	}
+	
+	@WebMethod
+	public Result deleteReservations(List<Reservation> reservations)
+	{
+		Result result = new Result();		
+		for (Reservation reservation : reservations) {
+			Result auxResult = deleteReservation(reservation.getIdReservation());
+			if(!auxResult.isValid())
+				result = auxResult;
 		}
 		return result;
 	}

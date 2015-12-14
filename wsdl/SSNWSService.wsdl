@@ -17,6 +17,10 @@
     <wsdl:part name="parameters" element="tns:registerUserResponse">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="deleteReservationsResponse">
+    <wsdl:part name="parameters" element="tns:deleteReservationsResponse">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="getSportByIdResponse">
     <wsdl:part name="parameters" element="tns:getSportByIdResponse">
     </wsdl:part>
@@ -121,6 +125,10 @@
     <wsdl:part name="parameters" element="tns:getManagerEntitiesBySportResponse">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="addReservationsResponse">
+    <wsdl:part name="parameters" element="tns:addReservationsResponse">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="updateManagerEntity">
     <wsdl:part name="parameters" element="tns:updateManagerEntity">
     </wsdl:part>
@@ -147,6 +155,10 @@
   </wsdl:message>
   <wsdl:message name="getUserDetailsResponse">
     <wsdl:part name="parameters" element="tns:getUserDetailsResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="addReservations">
+    <wsdl:part name="parameters" element="tns:addReservations">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="deleteFieldResponse">
@@ -223,6 +235,10 @@
   </wsdl:message>
   <wsdl:message name="getSports">
     <wsdl:part name="parameters" element="tns:getSports">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deleteReservations">
+    <wsdl:part name="parameters" element="tns:deleteReservations">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="deleteReservationResponse">
@@ -450,6 +466,12 @@
       <wsdl:output name="getUserDetailsResponse" message="tns:getUserDetailsResponse">
     </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="deleteReservations">
+      <wsdl:input name="deleteReservations" message="tns:deleteReservations">
+    </wsdl:input>
+      <wsdl:output name="deleteReservationsResponse" message="tns:deleteReservationsResponse">
+    </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="deleteField">
       <wsdl:input name="deleteField" message="tns:deleteField">
     </wsdl:input>
@@ -502,6 +524,12 @@
       <wsdl:input name="getManagerEntitiesById" message="tns:getManagerEntitiesById">
     </wsdl:input>
       <wsdl:output name="getManagerEntitiesByIdResponse" message="tns:getManagerEntitiesByIdResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addReservations">
+      <wsdl:input name="addReservations" message="tns:addReservations">
+    </wsdl:input>
+      <wsdl:output name="addReservationsResponse" message="tns:addReservationsResponse">
     </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="updateUser">
@@ -747,6 +775,15 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="deleteReservations">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="deleteReservations">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="deleteReservationsResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="deleteField">
       <soap:operation soapAction="" style="document"/>
       <wsdl:input name="deleteField">
@@ -825,6 +862,15 @@
         <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="getManagerEntitiesByIdResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addReservations">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="addReservations">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="addReservationsResponse">
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>

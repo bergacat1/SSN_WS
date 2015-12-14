@@ -13,31 +13,21 @@ import javax.xml.bind.annotation.XmlType;
  * Generated source version: 2.7.11.redhat-3
  */
 
-@XmlRootElement(name = "leaveEvent", namespace = "http://ws.ssn/")
+@XmlRootElement(name = "deleteReservations", namespace = "http://ws.ssn/")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "leaveEvent", namespace = "http://ws.ssn/", propOrder = {"arg0", "arg1"})
+@XmlType(name = "deleteReservations", namespace = "http://ws.ssn/")
 
-public class LeaveEvent {
+public class DeleteReservations {
 
     @XmlElement(name = "arg0")
-    private int arg0;
-    @XmlElement(name = "arg1")
-    private int arg1;
+    private java.util.List<ssn.beans.Reservation> arg0;
 
-    public int getArg0() {
+    public java.util.List<ssn.beans.Reservation> getArg0() {
         return this.arg0;
     }
 
-    public void setArg0(int newArg0)  {
+    public void setArg0(java.util.List<ssn.beans.Reservation> newArg0)  {
         this.arg0 = newArg0;
-    }
-
-    public int getArg1() {
-        return this.arg1;
-    }
-
-    public void setArg1(int newArg1)  {
-        this.arg1 = newArg1;
     }
 
 }

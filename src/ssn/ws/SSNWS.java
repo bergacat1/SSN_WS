@@ -853,14 +853,22 @@ public class SSNWS {
 				}
 				Connection connection = ds.getConnection();
 				Statement stm = connection.createStatement(); 
-				String sql = "insert into reservations (" + (reservation.getIdEvent() > 0 ? "idevent," : "") + "idfield, startdate, enddate, comfirmed, type) values "
-						+ "(" + (reservation.getIdEvent() > 0 ? reservation.getIdEvent() + "," : "") + reservation.getIdField() + ",'" + df.format(new Date(reservation.getStartDate())) + "','" 
-						+ df.format(new Date(reservation.getEndDate())) + "'," + (reservation.isConfirmed() ? "'1'" : "'0'") + "," + reservation.getType() + ")";
-				stm.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
-				ResultSet rs;
-				rs = stm.getGeneratedKeys();
-				rs.next();
-				result.addData(new Integer(rs.getInt(1)));
+				String verificationQuery = "select * from reservations where idfield = " + reservation.getIdField() + " and startdate < '" + df.format(new Date(reservation.getEndDate())) + "' and enddate > '" + 
+						df.format(new Date(reservation.getStartDate())) + "'";
+				ResultSet auxRs = stm.executeQuery(verificationQuery);
+				if(!auxRs.next()){
+					String sql = "insert into reservations (" + (reservation.getIdEvent() > 0 ? "idevent," : "") + "idfield, startdate, enddate, comfirmed, type) values "
+							+ "(" + (reservation.getIdEvent() > 0 ? reservation.getIdEvent() + "," : "") + reservation.getIdField() + ",'" + df.format(new Date(reservation.getStartDate())) + "','" 
+							+ df.format(new Date(reservation.getEndDate())) + "'," + (reservation.isConfirmed() ? "'1'" : "'0'") + "," + reservation.getType() + ")";
+					stm.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+					ResultSet rs;
+					rs = stm.getGeneratedKeys();
+					rs.next();
+					result.addData(new Integer(rs.getInt(1)));
+				}else{
+					result.setValid(false);
+					result.setError("This reservation collides with other reservations.");
+				}
 				connection.close();
 				stm.close();
 			}   

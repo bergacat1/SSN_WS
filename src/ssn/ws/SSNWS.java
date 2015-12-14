@@ -972,9 +972,17 @@ public class SSNWS {
 				ResultSet rs;
 				rs = stm.getGeneratedKeys();
 				rs.next();
-				result.addData(new Integer(rs.getInt(1)));
+				int id = new Integer(rs.getInt(1));
+				result.addData(id);
 				connection.close();
 				stm.close();
+				Result aux;
+				for(FieldSports f : field.getSports()){
+					aux = addFieldSport(id,f.getIdSport(),f.getHourPrice());
+					if(!aux.isValid()){
+						result = aux;
+					}
+				}
 			}   
 					
 		}catch(Exception e)
@@ -1109,6 +1117,19 @@ public class SSNWS {
 		
 				connection.close();
 				stm.close();
+				
+				Result aux = deleteFieldSportByIdField(field.getIdField());
+				if(!aux.isValid()){
+					result = aux;
+				}
+				
+				for(FieldSports f : field.getSports()){
+					aux = addFieldSport(field.getIdField(),f.getIdSport(),f.getHourPrice());
+					if(!aux.isValid()){
+						result = aux;
+						break;
+					}
+				}
 			}   
 					
 		}catch(Exception e)
@@ -1219,6 +1240,7 @@ public class SSNWS {
 	
 	@WebMethod
 	public Result deleteFieldSport(int idField, int idSport){
+
 		Result result = new Result();
 		try     	
 		{
@@ -1247,6 +1269,38 @@ public class SSNWS {
 		}
 		return result;
 	}
+	
+	private Result deleteFieldSportByIdField(int idField){
+
+		Result result = new Result();
+		try     	
+		{
+			InitialContext cxt = new InitialContext();
+			if ( cxt != null ) 
+			{			
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgreSQL/SSN");
+				
+				if ( ds == null ) 
+				{
+			 		System.out.print("Data source no tr1obat");
+				}
+				
+				Connection connection = ds.getConnection();
+				Statement stm = connection.createStatement(); 
+				stm.executeUpdate("delete from sportfield where idfield = " + idField);	
+				connection.close();
+				stm.close();
+			}   
+					
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+			result.setValid(false);
+			result.setError(e.getMessage());
+		}
+		return result;
+	}
+
 	
 	@WebMethod
 	public Result<Integer> createManagerEntity(ManagerEntity me)

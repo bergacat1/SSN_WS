@@ -886,7 +886,8 @@ public class SSNWS {
 	@WebMethod
 	public Result<Integer> addReservations(List<Reservation> reservations)
 	{
-		Result<Integer> result = new Result<>();		
+		Result<Integer> result = new Result<>();	
+		if(reservations == null) return result;
 		for (Reservation reservation : reservations) {
 			Result<Integer> auxResult = addReservation(reservation);
 			if(!auxResult.isValid())
@@ -973,7 +974,8 @@ public class SSNWS {
 	@WebMethod
 	public Result deleteReservations(List<Reservation> reservations)
 	{
-		Result result = new Result();		
+		Result result = new Result();	
+		if(reservations == null) return result;
 		for (Reservation reservation : reservations) {
 			Result auxResult = deleteReservation(reservation.getIdReservation());
 			if(!auxResult.isValid())

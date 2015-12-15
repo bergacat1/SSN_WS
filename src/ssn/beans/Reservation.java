@@ -1,5 +1,7 @@
 package ssn.beans;
 
+import java.util.Date;
+
 
 public class Reservation {
 	private int idReservation;
@@ -8,6 +10,18 @@ public class Reservation {
 	private long startDate, endDate;
 	private boolean confirmed;
 	private int type;
+	
+    public String toStartDate(){
+		return new Date(startDate).toString(); 
+    }
+    
+    public String toEndDate(){
+		return new Date(endDate).toString(); 
+    }
+    
+    public String getDurationMin(){
+		return Long.toString((endDate - startDate)/(60*1000)); 
+    }
 	
 	public int getIdReservation() {
 		return idReservation;

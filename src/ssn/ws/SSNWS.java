@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,10 +25,15 @@ import ssn.beans.Result;
 import ssn.beans.Sport;
 import ssn.beans.User;
 
+import com.google.android.gcm.server.Message;
+import com.google.android.gcm.server.Sender;
+
 @WebService
 public class SSNWS {
 	
 	private static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSX");
+	private static final String SENDER_ID = "AIzaSyD2Z4HHOA3_rbUJVSHDcmPyJfs-JL9wv1g";
+	private static final String MY_ID = "APA91bF5wxdClrDETY3dOiSwsRmI8GcMYQjZE38UY2cWyq5ChZT2p6GFQQU1zmGZ07b710NUbaIky3_Ii6ftLyUk-VCyHrPKIhCjadkeAe3F2rcJozvMRLt41scC-8RTz6KWIJ8lhrVP";
 	
 	@WebMethod
 	public Result<Integer> registerUser(User user)
@@ -369,6 +375,12 @@ public class SSNWS {
 				if(rs.next() && rs.getInt("type") == 0)
 					stm.executeUpdate("insert into eventusers values (" + idEvent + "," + event.getIdCreator() + ")");
 				
+				rs = stm.executeQuery("select gcmid from users");
+				List<String> usersToNotify = new ArrayList<>();
+				while(rs.next())
+					usersToNotify.add(rs.getString("gcmid"));
+				sendPushNotification(usersToNotify);
+				
 				connection.close();
 				stm.close();
 			}   
@@ -669,6 +681,12 @@ public class SSNWS {
 				String sql = "insert into eventusers values "
 						+ "(" + idEvent + "," + idUser + ")";
 				stm.executeUpdate(sql);
+				
+				ResultSet rs = stm.executeQuery("select gcmid from users u join eventusers eu on (u.iduser = eu.iduser) where eu.idevent = " + idEvent
+													+ "and eu.iduser <> " + idUser);
+				List<String> usersToNotify = new ArrayList<>();
+				while(rs.next())
+					usersToNotify.add(rs.getString("gcmid"));
 				connection.close();
 				stm.close();
 			}   
@@ -1654,5 +1672,28 @@ public class SSNWS {
 			result.setError(e.getMessage());
 		}
 		return result;
+	}
+	
+	private boolean sendPushNotification(List<String> gcmIds)
+	{
+		Sender sender = new Sender(SENDER_ID);
+		Message message = new Message.Builder()
+								.collapseKey("A")
+								.timeToLive(30)
+								.delayWhileIdle(true)
+								.addData("message", "HOLA")
+								.build();
+		
+		try {
+			// use this for multicast messages.  The second parameter
+			// of sender.send() will need to be an array of register ids.
+			com.google.android.gcm.server.MulticastResult result = sender.send(message, gcmIds, 1);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return false;
+
 	}
 }

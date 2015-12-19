@@ -2,6 +2,9 @@
     <wb-module deploy-name="SSN_WS">
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <dependent-module archiveName="gcm-server.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/Users/alber/workspace/GCMService/WebContent/WEB-INF/lib/gcm-server.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="context-root" value="SSN_WS"/>
         <property name="java-output-path" value="/SSN_WS/build/classes"/>
     </wb-module>

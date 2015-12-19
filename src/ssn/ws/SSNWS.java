@@ -52,9 +52,9 @@ public class SSNWS {
 				}
 				Connection connection = ds.getConnection();
 				Statement stm = connection.createStatement(); 
-				String sql = "insert into users (type, email, username, name, surname1, surname2, telephone, currentaccount) values "
+				String sql = "insert into users (type, email, username, name, surname1, surname2, telephone, currentaccount, gcmid) values "
 						+ "(" + user.getType() + ",'" + user.getEmail() + "','" + user.getUsername() + "','" + user.getName() + "','" + user.getSurname1() 
-						+ "','" + user.getSurname2() + "'," + user.getTelephone() + "," + user.getCurrentAccount() + ")";
+						+ "','" + user.getSurname2() + "'," + user.getTelephone() + "," + user.getCurrentAccount() + ",'" + user.getGcmId() + "')";
 				stm.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
 				ResultSet rs;
 				rs = stm.getGeneratedKeys();
@@ -106,6 +106,7 @@ public class SSNWS {
 					user.setUsername(rs.getString("username"));
 					user.setTelephone(rs.getInt("telephone"));
 					user.setCurrentAccount(rs.getInt("currentaccount"));
+					user.setGcmId(rs.getString("gcmid"));
 				}
 				result.addData(user);
 				connection.close();
@@ -154,6 +155,7 @@ public class SSNWS {
 					user.setUsername(rs.getString("username"));
 					user.setTelephone(rs.getInt("telephone"));
 					user.setCurrentAccount(rs.getInt("currentaccount"));
+					user.setGcmId(rs.getString("gcmid"));
 					result.addData(user);
 				}
 				connection.close();
@@ -187,9 +189,9 @@ public class SSNWS {
 				
 				Connection connection = ds.getConnection();
 				Statement stm = connection.createStatement(); 
-				String sql = "update ssn.user (type, email, username, name, surname1, surname2, telephone, currentaccount) values "
+				String sql = "update ssn.user (type, email, username, name, surname1, surname2, telephone, currentaccount, gcmid) values "
 						+ "(" + user.getType() + ",'" + user.getEmail() + "','" + user.getUsername() + "','" + user.getName() + "','" + user.getSurname1() 
-						+ "','" + user.getSurname2() + "'," + user.getTelephone() + "," + user.getCurrentAccount() + ")";
+						+ "','" + user.getSurname2() + "'," + user.getTelephone() + "," + user.getCurrentAccount() + ",'" + user.getGcmId() + "')";
 				stm.executeUpdate(sql);				
 				connection.close();
 				stm.close();
@@ -379,7 +381,7 @@ public class SSNWS {
 				List<String> usersToNotify = new ArrayList<>();
 				while(rs.next())
 					usersToNotify.add(rs.getString("gcmid"));
-				sendPushNotification(usersToNotify);
+				sendPushNotification(usersToNotify, idEvent, 0);
 				
 				connection.close();
 				stm.close();
@@ -687,6 +689,7 @@ public class SSNWS {
 				List<String> usersToNotify = new ArrayList<>();
 				while(rs.next())
 					usersToNotify.add(rs.getString("gcmid"));
+				sendPushNotification(usersToNotify, idEvent, 1);
 				connection.close();
 				stm.close();
 			}   
@@ -1674,14 +1677,15 @@ public class SSNWS {
 		return result;
 	}
 	
-	private boolean sendPushNotification(List<String> gcmIds)
+	private boolean sendPushNotification(List<String> gcmIds, int idEvent, int type)
 	{
 		Sender sender = new Sender(SENDER_ID);
 		Message message = new Message.Builder()
-								.collapseKey("A")
+								.collapseKey("collapseKEy")
 								.timeToLive(30)
 								.delayWhileIdle(true)
-								.addData("message", "HOLA")
+								.addData("idEvent", String.valueOf(idEvent))
+								.addData("type", String.valueOf(type))
 								.build();
 		
 		try {

@@ -886,7 +886,7 @@
   </wsdl:binding>
   <wsdl:service name="SSNWSService">
     <wsdl:port name="SSNWSPort" binding="tns:SSNWSServiceSoapBinding">
-      <soap:address location="http://localhost:8080/SSN_WS/SSNWS"/>
+      <soap:address location="http://localhost:9090/SSNWSPort"/>
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

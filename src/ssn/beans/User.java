@@ -11,6 +11,7 @@ public class User {
 	private int currentAccount;
 	private int telephone;
 	private int type;
+	private String gcmId;
 	public int getId() {
 		return id;
 	}
@@ -64,6 +65,12 @@ public class User {
 	}
 	public void setSurname2(String surname2) {
 		this.surname2 = surname2;
+	}
+	public String getGcmId() {
+		return gcmId;
+	}
+	public void setGcmId(String gcmId) {
+		this.gcmId = gcmId;
 	}
 	
 }

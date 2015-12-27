@@ -2,6 +2,7 @@ package ssn.ws;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -10,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.jws.WebMethod;
+import javax.jws.WebParam;
 import javax.jws.WebService;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
@@ -33,10 +35,9 @@ public class SSNWS {
 	
 	private static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSX");
 	private static final String SENDER_ID = "AIzaSyD2Z4HHOA3_rbUJVSHDcmPyJfs-JL9wv1g";
-	private static final String MY_ID = "APA91bF5wxdClrDETY3dOiSwsRmI8GcMYQjZE38UY2cWyq5ChZT2p6GFQQU1zmGZ07b710NUbaIky3_Ii6ftLyUk-VCyHrPKIhCjadkeAe3F2rcJozvMRLt41scC-8RTz6KWIJ8lhrVP";
 	
 	@WebMethod
-	public Result<Integer> registerUser(User user)
+	public Result<Integer> registerUser(@WebParam(name="user") User user)
 	{
 		Result<Integer> result = new Result<>();
 		try     
@@ -52,14 +53,21 @@ public class SSNWS {
 				}
 				Connection connection = ds.getConnection();
 				Statement stm = connection.createStatement(); 
-				String sql = "insert into users (type, email, username, name, surname1, surname2, telephone, currentaccount, gcmid) values "
-						+ "(" + user.getType() + ",'" + user.getEmail() + "','" + user.getUsername() + "','" + user.getName() + "','" + user.getSurname1() 
-						+ "','" + user.getSurname2() + "'," + user.getTelephone() + "," + user.getCurrentAccount() + ",'" + user.getGcmId() + "')";
-				stm.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
 				ResultSet rs;
-				rs = stm.getGeneratedKeys();
-				rs.next();
-				result.addData(new Integer(rs.getInt(1)));
+				
+				rs = stm.executeQuery("select iduser from users where email = '" + user.getEmail() + "'");
+				if(rs.next()){
+					result.addData(new Integer(rs.getInt(1)));
+					stm.execute("update users set gcmid = '" + user.getGcmId() + "' where email = '" + user.getEmail() + "'");
+				}else{
+					String sql = "insert into users (type, email, username, name, surname1, surname2, telephone, currentaccount, gcmid) values "
+							+ "(" + user.getType() + ",'" + user.getEmail() + "','" + user.getUsername() + "','" + user.getName() + "','" + user.getSurname1() 
+							+ "','" + user.getSurname2() + "'," + user.getTelephone() + "," + user.getCurrentAccount() + ",'" + user.getGcmId() + "')";
+					stm.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+					rs = stm.getGeneratedKeys();
+					rs.next();
+					result.addData(new Integer(rs.getInt(1)));
+				}
 				connection.close();
 				stm.close();
 			}   
@@ -331,6 +339,8 @@ public class SSNWS {
 	public Result<Integer> createEvent(Event event)
 	{
 		Result<Integer> result = new Result<>();
+		Connection connection = null;
+		Statement stm = null;
 		try     
 		{
 			InitialContext cxt = new InitialContext();
@@ -342,8 +352,8 @@ public class SSNWS {
 				{
 			 		System.out.print("Data source no trobat");
 				}
-				Connection connection = ds.getConnection();
-				Statement stm = connection.createStatement(); 
+				connection = ds.getConnection();
+				stm = connection.createStatement(); 
 				ResultSet rs;
 				int sportMinPlayers = 0;
 				int sportMaxPlayers = 0;
@@ -368,9 +378,10 @@ public class SSNWS {
 				Integer idEvent = rs.getInt(1);
 				result.addData(idEvent);
 				
-				for (int i = 0; i < event.getManagerEntities().size(); i++) {
-					stm.executeUpdate("insert into eventmanagerentities values (" + idEvent + "," + event.getManagerEntities().get(i) + ")");
-				}
+				if(event.getManagerEntities() != null)
+					for (int i = 0; i < event.getManagerEntities().size(); i++) {
+						stm.executeUpdate("insert into eventmanagerentities values (" + idEvent + "," + event.getManagerEntities().get(i) + ")");
+					}
 				
 				rs = stm.executeQuery("select type from users where iduser = " + event.getIdCreator());
 				
@@ -380,18 +391,31 @@ public class SSNWS {
 				rs = stm.executeQuery("select gcmid from users");
 				List<String> usersToNotify = new ArrayList<>();
 				while(rs.next())
-					usersToNotify.add(rs.getString("gcmid"));
-				sendPushNotification(usersToNotify, idEvent, 0);
-				
-				connection.close();
-				stm.close();
+					if(rs.getString("gcmid") != "")
+						usersToNotify.add(rs.getString("gcmid"));
+				if(!usersToNotify.isEmpty())
+					sendPushNotification(usersToNotify, idEvent, 0);				
 			}   
 					
 		}catch(Exception e)
 		{
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			e.printStackTrace();
 			result.setValid(false);
 			result.setError(e.getMessage());
+		}finally{
+			try {
+				connection.close();
+				stm.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return result;
 	}
@@ -688,8 +712,10 @@ public class SSNWS {
 													+ "and eu.iduser <> " + idUser);
 				List<String> usersToNotify = new ArrayList<>();
 				while(rs.next())
-					usersToNotify.add(rs.getString("gcmid"));
-				sendPushNotification(usersToNotify, idEvent, 1);
+					if(rs.getString("gcmid") != "")
+						usersToNotify.add(rs.getString("gcmid"));
+				if(!usersToNotify.isEmpty())
+					sendPushNotification(usersToNotify, idEvent, 1);
 				connection.close();
 				stm.close();
 			}   
@@ -1686,13 +1712,14 @@ public class SSNWS {
 								.delayWhileIdle(true)
 								.addData("idEvent", String.valueOf(idEvent))
 								.addData("type", String.valueOf(type))
+								.addData("msg", type == 0 ? "Se ha creado un nuevo evento!" : "Se ha unido un usuario a uno de tus eventos!")
 								.build();
 		
 		try {
 			// use this for multicast messages.  The second parameter
 			// of sender.send() will need to be an array of register ids.
 			com.google.android.gcm.server.MulticastResult result = sender.send(message, gcmIds, 1);
-			
+			System.out.println("Notificació enviada");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;

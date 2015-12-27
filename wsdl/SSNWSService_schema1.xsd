@@ -188,7 +188,7 @@
   </xs:complexType>
 <xs:complexType name="registerUser">
     <xs:sequence>
-      <xs:element minOccurs="0" name="arg0" type="tns:user"/>
+      <xs:element minOccurs="0" name="user" type="tns:user"/>
     </xs:sequence>
   </xs:complexType>
 <xs:complexType name="registerUserResponse">

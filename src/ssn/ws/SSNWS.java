@@ -82,7 +82,7 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result<User> getUserDetails(int userId)
+	public Result<User> getUserDetails(@WebParam(name="userid") int userId)
 	{
 		Result<User> result = new Result<>();
 		try     	
@@ -131,7 +131,7 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result<User> getUsersByEvent(int idEvent)
+	public Result<User> getUsersByEvent(@WebParam(name="idevent") int idEvent)
 	{
 		Result<User> result = new Result<>();
 		try     	
@@ -180,7 +180,7 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result updateUser(User user)
+	public Result updateUser(@WebParam(name="user") User user)
 	{
 		Result result = new Result();
 		try     
@@ -215,7 +215,7 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result<Integer> createSport(Sport sport)
+	public Result<Integer> createSport(@WebParam(name="sport") Sport sport)
 	{
 		Result<Integer> result = new Result<>();
 		try     
@@ -293,7 +293,7 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result<Sport> getSportById(int idSport)
+	public Result<Sport> getSportById(@WebParam(name="idsport") int idSport)
 	{
 		Result<Sport> result = new Result<>();
 		try     	
@@ -336,7 +336,7 @@ public class SSNWS {
 	
 	
 	@WebMethod
-	public Result<Integer> createEvent(Event event)
+	public Result<Integer> createEvent(@WebParam(name="event") Event event)
 	{
 		Result<Integer> result = new Result<>();
 		Connection connection = null;
@@ -472,7 +472,9 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result<Event> getEventsByFilters(int idSport, int minPlayers, double maxPrice, Date fromDate, Date toDate)
+	public Result<Event> getEventsByFilters(@WebParam(name="idsport") int idSport,@WebParam(name="minplayers")  int minPlayers,
+										@WebParam(name="maxprice") double maxPrice,@WebParam(name="fromdate")  Date fromDate,
+										@WebParam(name="todate")  Date toDate)
 	{
 		Result<Event> result = new Result<>();
 		try     	
@@ -535,7 +537,7 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result<Event> getEventById(int idEvent)
+	public Result<Event> getEventById(@WebParam(name="idevent") int idEvent)
 	{
 		Result<Event> result = new Result<>();
 		try     	
@@ -586,7 +588,7 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result<Event> getEventsByUser(int idUser)
+	public Result<Event> getEventsByUser(@WebParam(name="iduser") int idUser)
 	{
 		Result<Event> result = new Result<>();
 		try     	
@@ -637,7 +639,7 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result<Event> getEventsHistoryByUser(int idUser)
+	public Result<Event> getEventsHistoryByUser(@WebParam(name="iduser") int idUser)
 	{
 		Result<Event> result = new Result<>();
 		try     	
@@ -688,7 +690,7 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result joinEvent(int idUser, int idEvent)
+	public Result joinEvent(@WebParam(name="iduser") int idUser, @WebParam(name="idevent") int idEvent)
 	{
 		Result<Integer> result = new Result<>();
 		try     
@@ -716,6 +718,37 @@ public class SSNWS {
 						usersToNotify.add(rs.getString("gcmid"));
 				if(!usersToNotify.isEmpty())
 					sendPushNotification(usersToNotify, idEvent, 1);
+				
+				//RESERVA
+				rs = stm.executeQuery("select minplayers from events where idevent = " + idEvent);
+				rs.next();
+				int minPlayers = rs.getInt("minplayers");
+				rs = stm.executeQuery("select count(*) as players from eventusers where idevent = " + idEvent);
+				rs.next();
+				if(rs.getInt("players") >= minPlayers)
+				{
+					rs = stm.executeQuery("select * from reservations where idevent = " + idEvent);
+					if(!rs.next())
+					{
+						Event e = getEventById(idEvent).getData().get(0);
+						sql = "select idfield from sportfield sf where sf.idsport = " + e.getIdSport() +
+								" and not exists (select * from reservations where idfield = sf.idfield and sf.hourprice <= " +
+								e.getMaxPrice() + " and startdate < '" + e.getEndDate() +
+								"' and enddate > '" + e.getStartDate() + "') order by hourprice asc ";
+						rs = stm.executeQuery(sql);
+						if (rs.next()){
+							Reservation r = new Reservation();
+							r.setIdEvent(idEvent);
+							r.setIdField(rs.getInt("idfield"));
+							r.setStartDate(e.getStartDate());
+							r.setEndDate(e.getEndDate());
+							r.setConfirmed(false);
+							r.setType(0);
+							addReservation(r);
+						}
+					}
+				}
+				
 				connection.close();
 				stm.close();
 			}   
@@ -730,7 +763,7 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result leaveEvent(int idUser, int idEvent)
+	public Result leaveEvent(@WebParam(name="iduser") int idUser, @WebParam(name="idevent") int idEvent)
 	{
 		Result<Integer> result = new Result<>();
 		try     
@@ -770,7 +803,7 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result<Integer> createReportType(ReportType reportType)
+	public Result<Integer> createReportType(@WebParam(name="reporttype") ReportType reportType)
 	{
 		Result<Integer> result = new Result<>();
 		try     
@@ -847,7 +880,7 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result<Integer> reportUser(Report r)
+	public Result<Integer> reportUser(@WebParam(name="report") Report report)
 	{
 		Result<Integer> result = new Result<>();
 		try     
@@ -863,9 +896,9 @@ public class SSNWS {
 				}
 				Connection connection = ds.getConnection();
 				Statement stm = connection.createStatement(); 
-				String sql = "insert into reports ( idreporttype, " + (r.getIdUser() > 0 ? "iduser," : "idfield,") + "idreporter, date, comment) values "
-						+ "(" + r.getIdReportType() + "," + (r.getIdUser() > 0 ? r.getIdUser() : r.getIdField()) + "," + r.getIdReporter() 
-						+ ",current_timestamp,'" + r.getComment() + "')";
+				String sql = "insert into reports ( idreporttype, " + (report.getIdUser() > 0 ? "iduser," : "idfield,") + "idreporter, date, comment) values "
+						+ "(" + report.getIdReportType() + "," + (report.getIdUser() > 0 ? report.getIdUser() : report.getIdField()) + "," + report.getIdReporter() 
+						+ ",current_timestamp,'" + report.getComment() + "')";
 				stm.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
 				ResultSet rs;
 				rs = stm.getGeneratedKeys();
@@ -885,7 +918,7 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result<Integer> addReservation(Reservation reservation)
+	public Result<Integer> addReservation(@WebParam(name="reservation") Reservation reservation)
 	{
 		Result<Integer> result = new Result<>();
 		try     
@@ -931,7 +964,7 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result<Integer> addReservations(List<Reservation> reservations)
+	public Result<Integer> addReservations(@WebParam(name="reservations") List<Reservation> reservations)
 	{
 		Result<Integer> result = new Result<>();	
 		if(reservations == null) return result;
@@ -944,7 +977,7 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result<Reservation> getReservationsByField(int idField)
+	public Result<Reservation> getReservationsByField(@WebParam(name="idfield") int idField)
 	{
 		Result<Reservation> result = new Result<>();
 		try     	
@@ -988,7 +1021,7 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result deleteReservation(int idReservation){
+	public Result deleteReservation(@WebParam(name="idreservation") int idReservation){
 		Result result = new Result();
 		try     	
 		{
@@ -1019,7 +1052,7 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result deleteReservations(List<Reservation> reservations)
+	public Result deleteReservations(@WebParam(name="reservations") List<Reservation> reservations)
 	{
 		Result result = new Result();	
 		if(reservations == null) return result;
@@ -1032,7 +1065,7 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result<Integer> addField(Field field)
+	public Result<Integer> addField(@WebParam(name="field") Field field)
 	{
 		Result<Integer> result = new Result<>();
 		try     
@@ -1077,7 +1110,7 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result<Field> getFieldById(int idField)
+	public Result<Field> getFieldById(@WebParam(name="idfield") int idField)
 	{
 		Result<Field> result = new Result<>();
 		try     	
@@ -1126,7 +1159,7 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result<Field> getFieldsByManagerEntity(int idManagerEntity)
+	public Result<Field> getFieldsByManagerEntity(@WebParam(name="idmanagerentity") int idManagerEntity)
 	{
 		Result<Field> result = new Result<>();
 		try     	
@@ -1177,7 +1210,7 @@ public class SSNWS {
 	}
 
 	@WebMethod
-	public Result<Integer> updateField(Field field)
+	public Result<Integer> updateField(@WebParam(name="field") Field field)
 	{
 		Result<Integer> result = new Result<>();
 		try     
@@ -1224,7 +1257,7 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result deleteField(int idField){
+	public Result deleteField(@WebParam(name="idfield") int idField){
 		Result result = new Result();
 		try     	
 		{
@@ -1256,7 +1289,8 @@ public class SSNWS {
 	}
 
 	@WebMethod
-	public Result addFieldSport(int idField, int idSport, double pricePerHour)
+	public Result addFieldSport(@WebParam(name="idfield") int idField, @WebParam(name="idsport") int idSport, 
+								@WebParam(name="priceperhour") double pricePerHour)
 	{
 		Result result = new Result();
 		try     
@@ -1289,7 +1323,8 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result updateFieldSport(int idField, int idSport, double pricePerHour)
+	public Result updateFieldSport(@WebParam(name="idfield") int idField, @WebParam(name="idsport") int idSport, 
+									@WebParam(name="priceperhour") double pricePerHour)
 	{
 		Result result = new Result();
 		try     
@@ -1321,7 +1356,7 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result deleteFieldSport(int idField, int idSport){
+	public Result deleteFieldSport(@WebParam(name="idfield") int idField, @WebParam(name="idsport") int idSport){
 
 		Result result = new Result();
 		try     	
@@ -1352,7 +1387,7 @@ public class SSNWS {
 		return result;
 	}
 	
-	private Result deleteFieldSportByIdField(int idField){
+	private Result deleteFieldSportByIdField(@WebParam(name="idfield") int idField){
 
 		Result result = new Result();
 		try     	
@@ -1385,7 +1420,7 @@ public class SSNWS {
 
 	
 	@WebMethod
-	public Result<Integer> createManagerEntity(ManagerEntity me)
+	public Result<Integer> createManagerEntity(@WebParam(name="managerentity") ManagerEntity managerEntity)
 	{
 		Result<Integer> result = new Result<>();
 		try     
@@ -1402,9 +1437,9 @@ public class SSNWS {
 				Connection connection = ds.getConnection();
 				Statement stm = connection.createStatement(); 
 				String sql = "insert into managerentity (iduser, type, name, address, city, latitude, longitude, telephone, email, web) values "
-						+ "(" + me.getIdUser() + "," + me.getType() + ",'" + me.getName() + "','" + me.getAddress()  
-						+ "','" + me.getCity() + "'," + me.getLatitude() + "," + me.getLongitude() + "," + me.getTelephone() + ",'" 
-						+ me.getEmail() + "','" + me.getWeb() + "')";
+						+ "(" + managerEntity.getIdUser() + "," + managerEntity.getType() + ",'" + managerEntity.getName() + "','" + managerEntity.getAddress()  
+						+ "','" + managerEntity.getCity() + "'," + managerEntity.getLatitude() + "," + managerEntity.getLongitude() + "," + managerEntity.getTelephone() + ",'" 
+						+ managerEntity.getEmail() + "','" + managerEntity.getWeb() + "')";
 				stm.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
 				ResultSet rs;
 				rs = stm.getGeneratedKeys();
@@ -1424,7 +1459,7 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result updateManagerEntity(ManagerEntity me)
+	public Result updateManagerEntity(@WebParam(name="managerentity") ManagerEntity managerEntity)
 	{
 		Result result = new Result<>();
 		try     
@@ -1441,9 +1476,9 @@ public class SSNWS {
 				Connection connection = ds.getConnection();
 				Statement stm = connection.createStatement(); 
 				String sql = "update managerentity set "
-						+ "iduser=" + me.getIdUser() + ", type=" + me.getType() + ",name='" + me.getName() + "',address='" + me.getAddress()  
-						+ "',city='" + me.getCity() + "',latitude=" + me.getLatitude() + ",longitude=" + me.getLongitude() 
-						+ ",telephone=" + me.getTelephone() + ",email='" + me.getEmail() + "',web='" + me.getWeb() + "' where idmanagerentity = " + me.getIdManagerEntity();
+						+ "iduser=" + managerEntity.getIdUser() + ", type=" + managerEntity.getType() + ",name='" + managerEntity.getName() + "',address='" + managerEntity.getAddress()  
+						+ "',city='" + managerEntity.getCity() + "',latitude=" + managerEntity.getLatitude() + ",longitude=" + managerEntity.getLongitude() 
+						+ ",telephone=" + managerEntity.getTelephone() + ",email='" + managerEntity.getEmail() + "',web='" + managerEntity.getWeb() + "' where idmanagerentity = " + managerEntity.getIdManagerEntity();
 				stm.executeUpdate(sql);
 				connection.close();
 				stm.close();
@@ -1510,7 +1545,7 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result<ManagerEntity> getManagerEntitiesById(int idManagerEntity)
+	public Result<ManagerEntity> getManagerEntitiesById(@WebParam(name="idmanagerentity") int idManagerEntity)
 	{
 		Result<ManagerEntity> result = new Result<>();
 		try     	
@@ -1561,7 +1596,7 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result<ManagerEntity> getManagerEntitiesBySport(int idSport)
+	public Result<ManagerEntity> getManagerEntitiesBySport(@WebParam(name="idsport") int idSport)
 	{
 		Result<ManagerEntity> result = new Result<>();
 		try     	
@@ -1615,7 +1650,7 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result<ManagerEntity> getManagerEntitiesByEvent(int idEvent)
+	public Result<ManagerEntity> getManagerEntitiesByEvent(@WebParam(name="idevent") int idEvent)
 	{
 		Result<ManagerEntity> result = new Result<>();
 		try     	
@@ -1666,7 +1701,7 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result deleteManagerEntity(int idManagerEntity){
+	public Result deleteManagerEntity(@WebParam(name="idmanagerentity") int idManagerEntity){
 		Result result = new Result();
 		try     	
 		{
@@ -1703,7 +1738,8 @@ public class SSNWS {
 		return result;
 	}
 	
-	private boolean sendPushNotification(List<String> gcmIds, int idEvent, int type)
+	private boolean sendPushNotification(@WebParam(name="gcmids") List<String> gcmIds, @WebParam(name="idevent") int idEvent, 
+											@WebParam(name="type") int type)
 	{
 		Sender sender = new Sender(SENDER_ID);
 		Message message = new Message.Builder()

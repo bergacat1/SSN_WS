@@ -33,10 +33,6 @@
     <wsdl:part name="parameters" element="tns:leaveEventResponse">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="getEventsByFilters">
-    <wsdl:part name="parameters" element="tns:getEventsByFilters">
-    </wsdl:part>
-  </wsdl:message>
   <wsdl:message name="updateFieldSport">
     <wsdl:part name="parameters" element="tns:updateFieldSport">
     </wsdl:part>
@@ -45,12 +41,20 @@
     <wsdl:part name="parameters" element="tns:createReportType">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="getUnjoinedEvents">
+    <wsdl:part name="parameters" element="tns:getUnjoinedEvents">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="deleteReservation">
     <wsdl:part name="parameters" element="tns:deleteReservation">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="addFieldSport">
     <wsdl:part name="parameters" element="tns:addFieldSport">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getUnjoinedEventsByFiltersResponse">
+    <wsdl:part name="parameters" element="tns:getUnjoinedEventsByFiltersResponse">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="getEventsByUser">
@@ -113,8 +117,8 @@
     <wsdl:part name="parameters" element="tns:addField">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="getEventsByFiltersResponse">
-    <wsdl:part name="parameters" element="tns:getEventsByFiltersResponse">
+  <wsdl:message name="getUnjoinedEventsByFilters">
+    <wsdl:part name="parameters" element="tns:getUnjoinedEventsByFilters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="getManagerEntitiesByEventResponse">
@@ -169,12 +173,16 @@
     <wsdl:part name="parameters" element="tns:getReservationsByFieldResponse">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="getUnjoinedEventsResponse">
+    <wsdl:part name="parameters" element="tns:getUnjoinedEventsResponse">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="addFieldSportResponse">
     <wsdl:part name="parameters" element="tns:addFieldSportResponse">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="getEventsResponse">
-    <wsdl:part name="parameters" element="tns:getEventsResponse">
+  <wsdl:message name="getFieldsByManagerEntity">
+    <wsdl:part name="parameters" element="tns:getFieldsByManagerEntity">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="getFieldByIdResponse">
@@ -185,8 +193,8 @@
     <wsdl:part name="parameters" element="tns:deleteFieldSport">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="getFieldsByManagerEntity">
-    <wsdl:part name="parameters" element="tns:getFieldsByManagerEntity">
+  <wsdl:message name="logoutUser">
+    <wsdl:part name="parameters" element="tns:logoutUser">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="getSportsResponse">
@@ -265,8 +273,8 @@
     <wsdl:part name="parameters" element="tns:createEvent">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="getEvents">
-    <wsdl:part name="parameters" element="tns:getEvents">
+  <wsdl:message name="logoutUserResponse">
+    <wsdl:part name="parameters" element="tns:logoutUserResponse">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="getReportTypes">
@@ -301,12 +309,12 @@
     <wsdl:part name="parameters" element="tns:getUsersByEvent">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="getSportById">
-    <wsdl:part name="parameters" element="tns:getSportById">
-    </wsdl:part>
-  </wsdl:message>
   <wsdl:message name="getFieldsByManagerEntityResponse">
     <wsdl:part name="parameters" element="tns:getFieldsByManagerEntityResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getSportById">
+    <wsdl:part name="parameters" element="tns:getSportById">
     </wsdl:part>
   </wsdl:message>
   <wsdl:portType name="SSNWS">
@@ -326,6 +334,12 @@
       <wsdl:input name="createSport" message="tns:createSport">
     </wsdl:input>
       <wsdl:output name="createSportResponse" message="tns:createSportResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getUnjoinedEventsByFilters">
+      <wsdl:input name="getUnjoinedEventsByFilters" message="tns:getUnjoinedEventsByFilters">
+    </wsdl:input>
+      <wsdl:output name="getUnjoinedEventsByFiltersResponse" message="tns:getUnjoinedEventsByFiltersResponse">
     </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="deleteFieldSport">
@@ -364,12 +378,6 @@
       <wsdl:output name="getManagerEntitiesResponse" message="tns:getManagerEntitiesResponse">
     </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="getEventsByFilters">
-      <wsdl:input name="getEventsByFilters" message="tns:getEventsByFilters">
-    </wsdl:input>
-      <wsdl:output name="getEventsByFiltersResponse" message="tns:getEventsByFiltersResponse">
-    </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="getFieldById">
       <wsdl:input name="getFieldById" message="tns:getFieldById">
     </wsdl:input>
@@ -406,6 +414,12 @@
       <wsdl:output name="getReportTypesResponse" message="tns:getReportTypesResponse">
     </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="getUnjoinedEvents">
+      <wsdl:input name="getUnjoinedEvents" message="tns:getUnjoinedEvents">
+    </wsdl:input>
+      <wsdl:output name="getUnjoinedEventsResponse" message="tns:getUnjoinedEventsResponse">
+    </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="leaveEvent">
       <wsdl:input name="leaveEvent" message="tns:leaveEvent">
     </wsdl:input>
@@ -424,16 +438,16 @@
       <wsdl:output name="updateManagerEntityResponse" message="tns:updateManagerEntityResponse">
     </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="logoutUser">
+      <wsdl:input name="logoutUser" message="tns:logoutUser">
+    </wsdl:input>
+      <wsdl:output name="logoutUserResponse" message="tns:logoutUserResponse">
+    </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="getEventsByUser">
       <wsdl:input name="getEventsByUser" message="tns:getEventsByUser">
     </wsdl:input>
       <wsdl:output name="getEventsByUserResponse" message="tns:getEventsByUserResponse">
-    </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getEvents">
-      <wsdl:input name="getEvents" message="tns:getEvents">
-    </wsdl:input>
-      <wsdl:output name="getEventsResponse" message="tns:getEventsResponse">
     </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="getSportById">
@@ -568,6 +582,15 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="getUnjoinedEventsByFilters">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getUnjoinedEventsByFilters">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getUnjoinedEventsByFiltersResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="deleteFieldSport">
       <soap:operation soapAction="" style="document"/>
       <wsdl:input name="deleteFieldSport">
@@ -610,15 +633,6 @@
         <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="joinEventResponse">
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getEventsByFilters">
-      <soap:operation soapAction="" style="document"/>
-      <wsdl:input name="getEventsByFilters">
-        <soap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output name="getEventsByFiltersResponse">
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
@@ -685,6 +699,15 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="getUnjoinedEvents">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getUnjoinedEvents">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getUnjoinedEventsResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="leaveEvent">
       <soap:operation soapAction="" style="document"/>
       <wsdl:input name="leaveEvent">
@@ -712,21 +735,21 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="logoutUser">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="logoutUser">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="logoutUserResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="updateManagerEntity">
       <soap:operation soapAction="" style="document"/>
       <wsdl:input name="updateManagerEntity">
         <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="updateManagerEntityResponse">
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getEvents">
-      <soap:operation soapAction="" style="document"/>
-      <wsdl:input name="getEvents">
-        <soap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output name="getEventsResponse">
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>

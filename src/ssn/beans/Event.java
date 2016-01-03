@@ -6,6 +6,8 @@ public class Event {
 	private int idEvent;
 	private int idCreator;
 	private int idSport;
+	private String sportName;
+	private int actualPlayers;
 	private int minPlayers;
 	private int maxPlayers;
 	private long startDate;
@@ -94,5 +96,17 @@ public class Event {
 	}
 	public void setMaxPrice(double maxPrice) {
 		this.maxPrice = maxPrice;
+	}
+	public String getSportName() {
+		return sportName;
+	}
+	public void setSportName(String sportName) {
+		this.sportName = sportName;
+	}
+	public int getActualPlayers() {
+		return actualPlayers;
+	}
+	public void setActualPlayers(int actualPlayers) {
+		this.actualPlayers = actualPlayers;
 	}
 }

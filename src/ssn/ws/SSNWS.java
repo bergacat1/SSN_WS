@@ -33,7 +33,7 @@ import com.google.android.gcm.server.Sender;
 @WebService
 public class SSNWS {
 	
-	private static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSX");
+	private static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssX");
 	private static final String SENDER_ID = "AIzaSyD2Z4HHOA3_rbUJVSHDcmPyJfs-JL9wv1g";
 	
 	@WebMethod
@@ -180,9 +180,9 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result updateUser(@WebParam(name="user") User user)
+	public Result<Integer> updateUser(@WebParam(name="user") User user)
 	{
-		Result result = new Result();
+		Result<Integer> result = new Result<Integer>();
 		try     
 		{
 			InitialContext cxt = new InitialContext();
@@ -197,10 +197,46 @@ public class SSNWS {
 				
 				Connection connection = ds.getConnection();
 				Statement stm = connection.createStatement(); 
-				String sql = "update ssn.user (type, email, username, name, surname1, surname2, telephone, currentaccount, gcmid) values "
-						+ "(" + user.getType() + ",'" + user.getEmail() + "','" + user.getUsername() + "','" + user.getName() + "','" + user.getSurname1() 
-						+ "','" + user.getSurname2() + "'," + user.getTelephone() + "," + user.getCurrentAccount() + ",'" + user.getGcmId() + "')";
-				stm.executeUpdate(sql);				
+				String sql = "update user set type =" + user.getType() + ", email='" + user.getEmail() + "', username='" + user.getUsername() + 
+						"', name'" + user.getName() + "', surname1='" + user.getSurname1() + "', surname2'" + user.getSurname2() + 
+						"', telephone=" + user.getTelephone() + ", currentaccount" + user.getCurrentAccount() + ", gcmid='" + user.getGcmId() + 
+						" where iduser = " + user.getId();
+				stm.executeUpdate(sql);	
+				result.addData(user.getId());			
+				connection.close();
+				stm.close();
+			}   
+					
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+			result.setValid(false);
+			result.setError(e.getMessage());
+		}
+		return result;
+	}
+	
+	@WebMethod
+	public Result<Integer> logoutUser(@WebParam(name="userid") int userid)
+	{
+		Result<Integer> result = new Result<Integer>();
+		try     
+		{
+			InitialContext cxt = new InitialContext();
+			if ( cxt != null ) 
+			{			
+				DataSource ds = (DataSource) cxt.lookup( "java:jboss/PostgreSQL/SSN");
+				
+				if ( ds == null ) 
+				{
+			 		System.out.print("Data source no trobat");
+				}
+				
+				Connection connection = ds.getConnection();
+				Statement stm = connection.createStatement(); 
+				String sql = "update user set gcmid = '' where iduser = " + userid;
+				stm.executeUpdate(sql);	
+				result.addData(userid);			
 				connection.close();
 				stm.close();
 			}   
@@ -421,7 +457,7 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result<Event> getEvents()
+	public Result<Event> getUnjoinedEvents(@WebParam(name="userid")int userId)
 	{
 		Result<Event> result = new Result<>();
 		try     	
@@ -438,7 +474,7 @@ public class SSNWS {
 				
 				Connection connection = ds.getConnection();
 				Statement stm = connection.createStatement(); 
-				ResultSet rs = stm.executeQuery("select * from events ");
+				ResultSet rs = stm.executeQuery("select e.*, s.name from events e join sports s on (e.idsport = s.idsport) where userid <> " + userId);
 				
 				Event e;
 				while(rs.next()){					
@@ -446,8 +482,9 @@ public class SSNWS {
 					e.setIdEvent(rs.getInt("idevent"));
 					e.setIdCreator(rs.getInt("idcreator"));
 					e.setIdSport(rs.getInt("idsport"));
-					e.setStartDate(rs.getDate("startdatetime").getTime());
-					e.setEndDate(rs.getDate("enddatetime").getTime());
+					e.setSportName(rs.getString("name"));
+					e.setStartDate(df.parse(rs.getString("startdatetime")).getTime());
+					e.setEndDate(df.parse(rs.getString("enddatetime")).getTime());
 					e.setCity(rs.getString("city"));
 					e.setLatitude(rs.getDouble("latitude"));
 					e.setLongitude(rs.getDouble("longitude"));
@@ -456,6 +493,16 @@ public class SSNWS {
 					e.setMaxPlayers(rs.getInt("maxplayers"));
 					e.setMaxPrice(rs.getDouble("maxprice"));
 					result.addData(e);
+				}
+				
+				for (Event event : result.getData()) {
+					rs = stm.executeQuery("select count(*) as players from eventusers where idevent = " + event.getIdEvent());
+					if(rs.next()){
+						event.setActualPlayers(rs.getInt("players"));
+					}else{
+						event.setActualPlayers(0);
+					}
+					
 				}
 
 				connection.close();
@@ -472,9 +519,9 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result<Event> getEventsByFilters(@WebParam(name="idsport") int idSport,@WebParam(name="minplayers")  int minPlayers,
-										@WebParam(name="maxprice") double maxPrice,@WebParam(name="fromdate")  Date fromDate,
-										@WebParam(name="todate")  Date toDate)
+	public Result<Event> getUnjoinedEventsByFilters(@WebParam(name="iduser") int idUser, @WebParam(name="idsport") int idSport,@WebParam(name="minplayers")  int minPlayers,
+										@WebParam(name="maxprice") double maxPrice,@WebParam(name="fromdate")  long fromDate,
+										@WebParam(name="todate")  long toDate)
 	{
 		Result<Event> result = new Result<>();
 		try     	
@@ -492,17 +539,17 @@ public class SSNWS {
 				Connection connection = ds.getConnection();
 				Statement stm = connection.createStatement(); 
 				StringBuilder sb = new StringBuilder();
-				sb.append("select * from events e where 1=1");
+				sb.append("select e.*, s.name from events e join sports s on (e.idsport = s.idsport) where not exists (select * from eventusers eu where eu.idevent = e.idevent and eu.iduser = " + idUser + ")");
 				if(idSport > 0)
 					sb.append(" and e.idsport = " + idSport);
 				if(minPlayers > 0)
 					sb.append(" and (select count(*) from eventusers eu where eu.idevent = e.idevent) >= " + minPlayers);
 				if(maxPrice > 0)
 					sb.append(" and e.maxprice <= " + maxPrice);
-				if(fromDate != null)
-					sb.append(" and e.startdatetime >= '" + df.format(fromDate) + "'");
-				if(toDate != null)
-					sb.append(" and e.startdatetime <= '" + df.format(toDate) + "'");
+				if(fromDate > 0)
+					sb.append(" and e.startdatetime >= '" + df.format(new Date(fromDate)) + "'");
+				if(toDate > 0)
+					sb.append(" and e.startdatetime <= '" + df.format(new Date(toDate)) + "'");
 				ResultSet rs = stm.executeQuery(sb.toString());
 				
 				Event e;
@@ -511,8 +558,9 @@ public class SSNWS {
 					e.setIdEvent(rs.getInt("idevent"));
 					e.setIdCreator(rs.getInt("idcreator"));
 					e.setIdSport(rs.getInt("idsport"));
-					e.setStartDate(rs.getDate("startdatetime").getTime());
-					e.setEndDate(rs.getDate("enddatetime").getTime());
+					e.setSportName(rs.getString("name"));
+					e.setStartDate(df.parse(rs.getString("startdatetime")).getTime());
+					e.setEndDate(df.parse(rs.getString("enddatetime")).getTime());
 					e.setCity(rs.getString("city"));
 					e.setLatitude(rs.getDouble("latitude"));
 					e.setLongitude(rs.getDouble("longitude"));
@@ -554,7 +602,7 @@ public class SSNWS {
 				
 				Connection connection = ds.getConnection();
 				Statement stm = connection.createStatement(); 
-				ResultSet rs = stm.executeQuery("select * from events where idevent = " + idEvent);
+				ResultSet rs = stm.executeQuery("select * from events e join sports s on (e.idsport = s.idsport) where idevent = " + idEvent);
 				
 				Event e;
 				if(rs.next()){					
@@ -562,8 +610,9 @@ public class SSNWS {
 					e.setIdEvent(rs.getInt("idevent"));
 					e.setIdCreator(rs.getInt("idcreator"));
 					e.setIdSport(rs.getInt("idsport"));
-					e.setStartDate(rs.getDate("startdatetime").getTime());
-					e.setEndDate(rs.getDate("enddatetime").getTime());
+					e.setSportName(rs.getString("name"));
+					e.setStartDate(df.parse(rs.getString("startdatetime")).getTime());
+					e.setEndDate(df.parse(rs.getString("enddatetime")).getTime());
 					e.setCity(rs.getString("city"));
 					e.setLatitude(rs.getDouble("latitude"));
 					e.setLongitude(rs.getDouble("longitude"));
@@ -605,7 +654,8 @@ public class SSNWS {
 				
 				Connection connection = ds.getConnection();
 				Statement stm = connection.createStatement(); 
-				ResultSet rs = stm.executeQuery("select * from events e join eventusers eu on (e.idevent = eu.idevent) where e.startdatetime > current_timestamp and eu.iduser = " + idUser);
+				ResultSet rs = stm.executeQuery("select e.*, eu.*, s.name from events e join eventusers eu on (e.idevent = eu.idevent), sports s where"
+						+ " s.idsport = e.idsport and e.startdatetime > current_timestamp and eu.iduser = " + idUser);
 				
 				Event e;
 				while(rs.next()){					
@@ -613,8 +663,9 @@ public class SSNWS {
 					e.setIdEvent(rs.getInt("idevent"));
 					e.setIdCreator(rs.getInt("idcreator"));
 					e.setIdSport(rs.getInt("idsport"));
-					e.setStartDate(rs.getDate("startdatetime").getTime());
-					e.setEndDate(rs.getDate("enddatetime").getTime());
+					e.setSportName(rs.getString("name"));
+					e.setStartDate(df.parse(rs.getString("startdatetime")).getTime());
+					e.setEndDate(df.parse(rs.getString("enddatetime")).getTime());
 					e.setCity(rs.getString("city"));
 					e.setLatitude(rs.getDouble("latitude"));
 					e.setLongitude(rs.getDouble("longitude"));
@@ -656,7 +707,7 @@ public class SSNWS {
 				
 				Connection connection = ds.getConnection();
 				Statement stm = connection.createStatement(); 
-				ResultSet rs = stm.executeQuery("select * from events e join eventusers eu on (e.idevent = eu.idevent) where e.startdatetime <= current_timestamp and eu.iduser = " + idUser);
+				ResultSet rs = stm.executeQuery("select e.*, eu.*, s.name from events e join eventusers eu on (e.idevent = eu.idevent), sports s where s.idsport = e.idsport and e.startdatetime <= current_timestamp and eu.iduser = " + idUser);
 				
 				Event e;
 				while(rs.next()){					
@@ -664,8 +715,9 @@ public class SSNWS {
 					e.setIdEvent(rs.getInt("idevent"));
 					e.setIdCreator(rs.getInt("idcreator"));
 					e.setIdSport(rs.getInt("idsport"));
-					e.setStartDate(rs.getDate("startdatetime").getTime());
-					e.setEndDate(rs.getDate("enddatetime").getTime());
+					e.setSportName(rs.getString("name"));
+					e.setStartDate(df.parse(rs.getString("startdatetime")).getTime());
+					e.setEndDate(df.parse(rs.getString("enddatetime")).getTime());
 					e.setCity(rs.getString("city"));
 					e.setLatitude(rs.getDouble("latitude"));
 					e.setLongitude(rs.getDouble("longitude"));
@@ -731,8 +783,10 @@ public class SSNWS {
 					if(!rs.next())
 					{
 						Event e = getEventById(idEvent).getData().get(0);
-						sql = "select idfield from sportfield sf where sf.idsport = " + e.getIdSport() +
-								" and not exists (select * from reservations where idfield = sf.idfield and sf.hourprice <= " +
+						sql = "select top 1 idfield from sportfield sf, field f, managerentity me where sf.idsport = " + e.getIdSport() +
+								" and sf.idfield = f.idfield and f.idmanagerentity = me.idmanagerentity and (me.city = '" + e.getCity() + "' or "
+								+ "((" + e.getLatitude() + " - me.latitude)^2 + (" + e.getLongitude() + " - me.longitude)^2) < " + e.getRange() + "^2" 
+								+ " and not exists (select * from reservations where idfield = sf.idfield and sf.hourprice <= " +
 								e.getMaxPrice() + " and startdate < '" + e.getEndDate() +
 								"' and enddate > '" + e.getStartDate() + "') order by hourprice asc ";
 						rs = stm.executeQuery(sql);
@@ -1002,8 +1056,8 @@ public class SSNWS {
 					r.setIdReservation(rs.getInt("idreservation"));
 					r.setIdEvent(rs.getInt("idevent"));
 					r.setIdField(rs.getInt("idfield"));
-					r.setStartDate(rs.getDate("startdate").getTime());
-					r.setEndDate(rs.getDate("enddate").getTime());
+					r.setStartDate(df.parse(rs.getString("startdatetime")).getTime());
+					r.setEndDate(df.parse(rs.getString("enddatetime")).getTime());
 					r.setConfirmed(rs.getBoolean("comfirmed"));
 					r.setType(rs.getInt("type"));
 					result.addData(r);

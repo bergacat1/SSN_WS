@@ -13,21 +13,21 @@ import javax.xml.bind.annotation.XmlType;
  * Generated source version: 2.7.11.redhat-3
  */
 
-@XmlRootElement(name = "deleteFieldResponse", namespace = "http://ws.ssn/")
+@XmlRootElement(name = "logoutUser", namespace = "http://ws.ssn/")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "deleteFieldResponse", namespace = "http://ws.ssn/")
+@XmlType(name = "logoutUser", namespace = "http://ws.ssn/")
 
-public class DeleteFieldResponse {
+public class LogoutUser {
 
-    @XmlElement(name = "return")
-    private ssn.beans.Result _return;
+    @XmlElement(name = "userid")
+    private int userid;
 
-    public ssn.beans.Result getReturn() {
-        return this._return;
+    public int getUserid() {
+        return this.userid;
     }
 
-    public void setReturn(ssn.beans.Result new_return)  {
-        this._return = new_return;
+    public void setUserid(int newUserid)  {
+        this.userid = newUserid;
     }
 
 }

@@ -539,7 +539,9 @@ public class SSNWS {
 				Connection connection = ds.getConnection();
 				Statement stm = connection.createStatement(); 
 				StringBuilder sb = new StringBuilder();
-				sb.append("select e.*, s.name from events e join sports s on (e.idsport = s.idsport) where not exists (select * from eventusers eu where eu.idevent = e.idevent and eu.iduser = " + idUser + ")");
+				sb.append("select e.*, s.name from events e join sports s on (e.idsport = s.idsport) ");
+				sb.append("where not exists (select * from eventusers eu where eu.idevent = e.idevent and eu.iduser = " + idUser + ")");
+				sb.append(" and e.startdatetime > current_timestamp");
 				if(idSport > 0)
 					sb.append(" and e.idsport = " + idSport);
 				if(minPlayers > 0)
@@ -763,7 +765,7 @@ public class SSNWS {
 				stm.executeUpdate(sql);
 				
 				ResultSet rs = stm.executeQuery("select gcmid from users u join eventusers eu on (u.iduser = eu.iduser) where eu.idevent = " + idEvent
-													+ "and eu.iduser <> " + idUser);
+													+ " and eu.iduser <> " + idUser);
 				List<String> usersToNotify = new ArrayList<>();
 				while(rs.next())
 					if(rs.getString("gcmid") != "")
@@ -783,12 +785,11 @@ public class SSNWS {
 					if(!rs.next())
 					{
 						Event e = getEventById(idEvent).getData().get(0);
-						sql = "select top 1 idfield from sportfield sf, field f, managerentity me where sf.idsport = " + e.getIdSport() +
+						sql = "select f.idfield from sportfield sf, fields f, managerentity me where sf.idsport = " + e.getIdSport() +
 								" and sf.idfield = f.idfield and f.idmanagerentity = me.idmanagerentity and (me.city = '" + e.getCity() + "' or "
-								+ "((" + e.getLatitude() + " - me.latitude)^2 + (" + e.getLongitude() + " - me.longitude)^2) < " + e.getRange() + "^2" 
-								+ " and not exists (select * from reservations where idfield = sf.idfield and sf.hourprice <= " +
-								e.getMaxPrice() + " and startdate < '" + e.getEndDate() +
-								"' and enddate > '" + e.getStartDate() + "') order by hourprice asc ";
+								+ "((" + e.getLatitude() + " - me.latitude)^2 + (" + e.getLongitude() + " - me.longitude)^2) < " + e.getRange() + "^2)" 
+								+ "and sf.hourprice <= " + e.getMaxPrice() + " and not exists (select * from reservations r where r.idfield = sf.idfield and startdate < '" + df.format(new Date(e.getEndDate())) +
+								"' and enddate > '" + df.format(new Date(e.getStartDate())) + "') order by sf.hourprice asc limit 1";
 						rs = stm.executeQuery(sql);
 						if (rs.next()){
 							Reservation r = new Reservation();

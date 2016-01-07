@@ -13,21 +13,21 @@ import javax.xml.bind.annotation.XmlType;
  * Generated source version: 2.7.11.redhat-3
  */
 
-@XmlRootElement(name = "getReservationsByField", namespace = "http://ws.ssn/")
+@XmlRootElement(name = "getReservationsById", namespace = "http://ws.ssn/")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "getReservationsByField", namespace = "http://ws.ssn/")
+@XmlType(name = "getReservationsById", namespace = "http://ws.ssn/")
 
-public class GetReservationsByField {
+public class GetReservationsById {
 
-    @XmlElement(name = "idfield")
-    private int idfield;
+    @XmlElement(name = "idreservation")
+    private int idreservation;
 
-    public int getIdfield() {
-        return this.idfield;
+    public int getIdreservation() {
+        return this.idreservation;
     }
 
-    public void setIdfield(int newIdfield)  {
-        this.idfield = newIdfield;
+    public void setIdreservation(int newIdreservation)  {
+        this.idreservation = newIdreservation;
     }
 
 }

@@ -33,6 +33,10 @@
     <wsdl:part name="parameters" element="tns:leaveEventResponse">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="getReservationsByIdResponse">
+    <wsdl:part name="parameters" element="tns:getReservationsByIdResponse">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="updateFieldSport">
     <wsdl:part name="parameters" element="tns:updateFieldSport">
     </wsdl:part>
@@ -277,6 +281,10 @@
     <wsdl:part name="parameters" element="tns:logoutUserResponse">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="getReservationsById">
+    <wsdl:part name="parameters" element="tns:getReservationsById">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="getReportTypes">
     <wsdl:part name="parameters" element="tns:getReportTypes">
     </wsdl:part>
@@ -412,6 +420,12 @@
       <wsdl:input name="getReportTypes" message="tns:getReportTypes">
     </wsdl:input>
       <wsdl:output name="getReportTypesResponse" message="tns:getReportTypesResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getReservationsById">
+      <wsdl:input name="getReservationsById" message="tns:getReservationsById">
+    </wsdl:input>
+      <wsdl:output name="getReservationsByIdResponse" message="tns:getReservationsByIdResponse">
     </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="getUnjoinedEvents">
@@ -696,6 +710,15 @@
         <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="getReportTypesResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getReservationsById">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getReservationsById">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getReservationsByIdResponse">
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>

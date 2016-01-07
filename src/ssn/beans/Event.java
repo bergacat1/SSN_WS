@@ -3,6 +3,7 @@ package ssn.beans;
 import java.util.List;
 
 public class Event {
+	public enum States {OPEN, RESERVED, COMPLETED, FINISHED}
 	private int idEvent;
 	private int idCreator;
 	private int idSport;
@@ -18,6 +19,10 @@ public class Event {
 	private int range;
 	private double maxPrice;
 	private List<Integer> managerEntities;
+	private boolean joined;
+	private States state;
+	private long limitDate;
+	private int idReservation;
 	
 	public int getIdEvent() {
 		return idEvent;
@@ -108,5 +113,29 @@ public class Event {
 	}
 	public void setActualPlayers(int actualPlayers) {
 		this.actualPlayers = actualPlayers;
+	}
+	public boolean isJoined() {
+		return joined;
+	}
+	public void setJoined(boolean joined) {
+		this.joined = joined;
+	}
+	public States getState() {
+		return state;
+	}
+	public void setState(States state) {
+		this.state = state;
+	}
+	public long getLimitDate() {
+		return limitDate;
+	}
+	public void setLimitDate(long limitDate) {
+		this.limitDate = limitDate;
+	}
+	public int getIdReservation() {
+		return idReservation;
+	}
+	public void setIdReservation(int idReservation) {
+		this.idReservation = idReservation;
 	}
 }

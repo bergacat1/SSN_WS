@@ -13,20 +13,20 @@ import javax.xml.bind.annotation.XmlType;
  * Generated source version: 2.7.11.redhat-3
  */
 
-@XmlRootElement(name = "getEventsHistoryByUserResponse", namespace = "http://ws.ssn/")
+@XmlRootElement(name = "getReservationsByIdResponse", namespace = "http://ws.ssn/")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "getEventsHistoryByUserResponse", namespace = "http://ws.ssn/")
+@XmlType(name = "getReservationsByIdResponse", namespace = "http://ws.ssn/")
 
-public class GetEventsHistoryByUserResponse {
+public class GetReservationsByIdResponse {
 
     @XmlElement(name = "return")
-    private ssn.beans.Result<ssn.beans.Event> _return;
+    private ssn.beans.Result<ssn.beans.Reservation> _return;
 
-    public ssn.beans.Result<ssn.beans.Event> getReturn() {
+    public ssn.beans.Result<ssn.beans.Reservation> getReturn() {
         return this._return;
     }
 
-    public void setReturn(ssn.beans.Result<ssn.beans.Event> new_return)  {
+    public void setReturn(ssn.beans.Result<ssn.beans.Reservation> new_return)  {
         this._return = new_return;
     }
 

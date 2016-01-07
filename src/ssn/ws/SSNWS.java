@@ -14,6 +14,7 @@ import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import ssn.beans.Event;
@@ -492,6 +493,7 @@ public class SSNWS {
 					e.setMinPlayers(rs.getInt("minplayers"));
 					e.setMaxPlayers(rs.getInt("maxplayers"));
 					e.setMaxPrice(rs.getDouble("maxprice"));
+					e.setLimitDate(df.parse(rs.getString("limitdatetime")).getTime());
 					result.addData(e);
 				}
 				
@@ -502,7 +504,22 @@ public class SSNWS {
 					}else{
 						event.setActualPlayers(0);
 					}
+
+					rs = stm.executeQuery("select count(*) as numusers from eventusers where idevent = " + event.getIdEvent());
+					if(rs.next()){
+						int numUsers = rs.getInt("numusers");
+						if(numUsers == event.getMaxPlayers())
+							event.setState(Event.States.COMPLETED);
+						else 
+							event.setState(Event.States.OPEN);
+					}else
+						event.setState(Event.States.OPEN);
 					
+					rs = stm.executeQuery("select idreservation from reservations where idevent = " + event.getIdEvent());
+					if(rs.next()){
+						event.setState(Event.States.RESERVED);
+						event.setIdReservation(rs.getInt("idreservation"));
+					}					
 				}
 
 				connection.close();
@@ -541,7 +558,7 @@ public class SSNWS {
 				StringBuilder sb = new StringBuilder();
 				sb.append("select e.*, s.name from events e join sports s on (e.idsport = s.idsport) ");
 				sb.append("where not exists (select * from eventusers eu where eu.idevent = e.idevent and eu.iduser = " + idUser + ")");
-				sb.append(" and e.startdatetime > current_timestamp");
+				sb.append(" and e.limitdatetime > current_timestamp");
 				if(idSport > 0)
 					sb.append(" and e.idsport = " + idSport);
 				if(minPlayers > 0)
@@ -570,7 +587,32 @@ public class SSNWS {
 					e.setMinPlayers(rs.getInt("minplayers"));
 					e.setMaxPlayers(rs.getInt("maxplayers"));
 					e.setMaxPrice(rs.getDouble("maxprice"));
+					e.setLimitDate(df.parse(rs.getString("limitdatetime")).getTime());
 					result.addData(e);
+				}
+				
+				for (Event event : result.getData()) {
+					rs = stm.executeQuery("select count(*) as players from eventusers where idevent = " + event.getIdEvent());
+					if(rs.next()){
+						event.setActualPlayers(rs.getInt("players"));
+					}else{
+						event.setActualPlayers(0);
+					}
+					rs = stm.executeQuery("select count(*) as numusers from eventusers where idevent = " + event.getIdEvent());
+					if(rs.next()){
+						int numUsers = rs.getInt("numusers");
+						if(numUsers == event.getMaxPlayers())
+							event.setState(Event.States.COMPLETED);
+						else 
+							event.setState(Event.States.OPEN);
+					}else
+						event.setState(Event.States.OPEN);
+					
+					rs = stm.executeQuery("select idreservation from reservations where idevent = " + event.getIdEvent());
+					if(rs.next()){
+						event.setState(Event.States.RESERVED);
+						event.setIdReservation(rs.getInt("idreservation"));
+					}					
 				}
 
 				connection.close();
@@ -587,7 +629,7 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result<Event> getEventById(@WebParam(name="idevent") int idEvent)
+	public Result<Event> getEventById(@WebParam(name="idevent") int idEvent, @WebParam(name="iduser") int idUser)
 	{
 		Result<Event> result = new Result<>();
 		try     	
@@ -622,6 +664,25 @@ public class SSNWS {
 					e.setMinPlayers(rs.getInt("minplayers"));
 					e.setMaxPlayers(rs.getInt("maxplayers"));
 					e.setMaxPrice(rs.getDouble("maxprice"));
+					e.setLimitDate(df.parse(rs.getString("limitdatetime")).getTime());					
+					rs = stm.executeQuery("select * from eventusers where idevent = " + idEvent + " and iduser = " + idUser);
+					if(rs.next())
+						e.setJoined(true);
+					rs = stm.executeQuery("select count(*) as numusers from eventusers where idevent = " + e.getIdEvent());
+					if(rs.next()){
+						int numUsers = rs.getInt("numusers");
+						if(numUsers == e.getMaxPlayers())
+							e.setState(Event.States.COMPLETED);
+						else 
+							e.setState(Event.States.OPEN);
+					}else
+						e.setState(Event.States.OPEN);
+					
+					rs = stm.executeQuery("select idreservation from reservations where idevent = " + e.getIdEvent());
+					if(rs.next()){
+						e.setState(Event.States.RESERVED);
+						e.setIdReservation(rs.getInt("idreservation"));
+					}
 					result.addData(e);
 				}
 
@@ -675,7 +736,33 @@ public class SSNWS {
 					e.setMinPlayers(rs.getInt("minplayers"));
 					e.setMaxPlayers(rs.getInt("maxplayers"));
 					e.setMaxPrice(rs.getDouble("maxprice"));
+					e.setLimitDate(df.parse(rs.getString("limitdatetime")).getTime());
 					result.addData(e);
+				}
+				
+				for (Event event : result.getData()) {
+					rs = stm.executeQuery("select count(*) as players from eventusers where idevent = " + event.getIdEvent());
+					if(rs.next()){
+						event.setActualPlayers(rs.getInt("players"));
+					}else{
+						event.setActualPlayers(0);
+					}
+
+					rs = stm.executeQuery("select count(*) as numusers from eventusers where idevent = " + event.getIdEvent());
+					if(rs.next()){
+						int numUsers = rs.getInt("numusers");
+						if(numUsers == event.getMaxPlayers())
+							event.setState(Event.States.COMPLETED);
+						else 
+							event.setState(Event.States.OPEN);
+					}else
+						event.setState(Event.States.OPEN);
+					
+					rs = stm.executeQuery("select idreservation from reservations where idevent = " + event.getIdEvent());
+					if(rs.next()){
+						event.setState(Event.States.RESERVED);
+						event.setIdReservation(rs.getInt("idreservation"));
+					}					
 				}
 
 				connection.close();
@@ -727,6 +814,7 @@ public class SSNWS {
 					e.setMinPlayers(rs.getInt("minplayers"));
 					e.setMaxPlayers(rs.getInt("maxplayers"));
 					e.setMaxPrice(rs.getDouble("maxprice"));
+					e.setLimitDate(df.parse(rs.getString("limitdatetime")).getTime());
 					result.addData(e);
 				}
 
@@ -784,7 +872,7 @@ public class SSNWS {
 					rs = stm.executeQuery("select * from reservations where idevent = " + idEvent);
 					if(!rs.next())
 					{
-						Event e = getEventById(idEvent).getData().get(0);
+						Event e = getEventById(idEvent, -1).getData().get(0);
 						sql = "select f.idfield from sportfield sf, fields f, managerentity me where sf.idsport = " + e.getIdSport() +
 								" and sf.idfield = f.idfield and f.idmanagerentity = me.idmanagerentity and (me.city = '" + e.getCity() + "' or "
 								+ "((" + e.getLatitude() + " - me.latitude)^2 + (" + e.getLongitude() + " - me.longitude)^2) < " + e.getRange() + "^2)" 
@@ -1053,6 +1141,50 @@ public class SSNWS {
 				
 				Reservation r;
 				while(rs.next()){
+					r= new Reservation();
+					r.setIdReservation(rs.getInt("idreservation"));
+					r.setIdEvent(rs.getInt("idevent"));
+					r.setIdField(rs.getInt("idfield"));
+					r.setStartDate(df.parse(rs.getString("startdatetime")).getTime());
+					r.setEndDate(df.parse(rs.getString("enddatetime")).getTime());
+					r.setConfirmed(rs.getBoolean("comfirmed"));
+					r.setType(rs.getInt("type"));
+					result.addData(r);
+				}
+
+				connection.close();
+				stm.close();
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+			result.setValid(false);
+			result.setError(e.getMessage());
+		}
+		return result;
+	}
+	
+	@WebMethod
+	public Result<Reservation> getReservationsById(@WebParam(name="idreservation") int idReservation)
+	{
+		Result<Reservation> result = new Result<>();
+		try     	
+		{
+			InitialContext cxt = new InitialContext();
+			if ( cxt != null ) 
+			{			
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgreSQL/SSN");
+				
+				if ( ds == null ) 
+				{
+			 		System.out.print("Data source no trobat");
+				}
+				
+				Connection connection = ds.getConnection();
+				Statement stm = connection.createStatement(); 
+				ResultSet rs = stm.executeQuery("select * from reservations where idreservation = " + idReservation);
+				
+				Reservation r;
+				if(rs.next()){
 					r= new Reservation();
 					r.setIdReservation(rs.getInt("idreservation"));
 					r.setIdEvent(rs.getInt("idevent"));

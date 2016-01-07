@@ -47,6 +47,8 @@
 <xs:element name="getReportTypesResponse" type="tns:getReportTypesResponse"/>
 <xs:element name="getReservationsByField" type="tns:getReservationsByField"/>
 <xs:element name="getReservationsByFieldResponse" type="tns:getReservationsByFieldResponse"/>
+<xs:element name="getReservationsById" type="tns:getReservationsById"/>
+<xs:element name="getReservationsByIdResponse" type="tns:getReservationsByIdResponse"/>
 <xs:element name="getSportById" type="tns:getSportById"/>
 <xs:element name="getSportByIdResponse" type="tns:getSportByIdResponse"/>
 <xs:element name="getSports" type="tns:getSports"/>
@@ -174,8 +176,11 @@
       <xs:element name="endDate" type="xs:long"/>
       <xs:element name="idCreator" type="xs:int"/>
       <xs:element name="idEvent" type="xs:int"/>
+      <xs:element name="idReservation" type="xs:int"/>
       <xs:element name="idSport" type="xs:int"/>
+      <xs:element name="joined" type="xs:boolean"/>
       <xs:element name="latitude" type="xs:double"/>
+      <xs:element name="limitDate" type="xs:long"/>
       <xs:element name="longitude" type="xs:double"/>
       <xs:element maxOccurs="unbounded" minOccurs="0" name="managerEntities" nillable="true" type="xs:int"/>
       <xs:element name="maxPlayers" type="xs:int"/>
@@ -184,6 +189,7 @@
       <xs:element name="range" type="xs:int"/>
       <xs:element minOccurs="0" name="sportName" type="xs:string"/>
       <xs:element name="startDate" type="xs:long"/>
+      <xs:element minOccurs="0" name="state" type="tns:states"/>
     </xs:sequence>
   </xs:complexType>
 <xs:complexType name="deleteFieldSport">
@@ -246,6 +252,7 @@
 <xs:complexType name="getEventById">
     <xs:sequence>
       <xs:element name="idevent" type="xs:int"/>
+      <xs:element name="iduser" type="xs:int"/>
     </xs:sequence>
   </xs:complexType>
 <xs:complexType name="getEventByIdResponse">
@@ -337,6 +344,27 @@
       <xs:element name="severity" type="xs:int"/>
     </xs:sequence>
   </xs:complexType>
+<xs:complexType name="getReservationsById">
+    <xs:sequence>
+      <xs:element name="idreservation" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="getReservationsByIdResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="tns:result"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="reservation">
+    <xs:sequence>
+      <xs:element name="confirmed" type="xs:boolean"/>
+      <xs:element name="endDate" type="xs:long"/>
+      <xs:element name="idEvent" type="xs:int"/>
+      <xs:element name="idField" type="xs:int"/>
+      <xs:element name="idReservation" type="xs:int"/>
+      <xs:element name="startDate" type="xs:long"/>
+      <xs:element name="type" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
 <xs:complexType name="getUnjoinedEvents">
     <xs:sequence>
       <xs:element name="userid" type="xs:int"/>
@@ -416,17 +444,6 @@
 <xs:complexType name="getReservationsByFieldResponse">
     <xs:sequence>
       <xs:element minOccurs="0" name="return" type="tns:result"/>
-    </xs:sequence>
-  </xs:complexType>
-<xs:complexType name="reservation">
-    <xs:sequence>
-      <xs:element name="confirmed" type="xs:boolean"/>
-      <xs:element name="endDate" type="xs:long"/>
-      <xs:element name="idEvent" type="xs:int"/>
-      <xs:element name="idField" type="xs:int"/>
-      <xs:element name="idReservation" type="xs:int"/>
-      <xs:element name="startDate" type="xs:long"/>
-      <xs:element name="type" type="xs:int"/>
     </xs:sequence>
   </xs:complexType>
 <xs:complexType name="getFieldsByManagerEntity">
@@ -581,4 +598,12 @@
       <xs:element minOccurs="0" name="return" type="tns:result"/>
     </xs:sequence>
   </xs:complexType>
+<xs:simpleType name="states">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="OPEN"/>
+      <xs:enumeration value="RESERVED"/>
+      <xs:enumeration value="COMPLETED"/>
+      <xs:enumeration value="FINISHED"/>
+    </xs:restriction>
+  </xs:simpleType>
 </xs:schema>

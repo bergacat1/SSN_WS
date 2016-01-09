@@ -27,6 +27,8 @@
 <xs:element name="deleteReservationsResponse" type="tns:deleteReservationsResponse"/>
 <xs:element name="getEventById" type="tns:getEventById"/>
 <xs:element name="getEventByIdResponse" type="tns:getEventByIdResponse"/>
+<xs:element name="getEventsByFilters" type="tns:getEventsByFilters"/>
+<xs:element name="getEventsByFiltersResponse" type="tns:getEventsByFiltersResponse"/>
 <xs:element name="getEventsByUser" type="tns:getEventsByUser"/>
 <xs:element name="getEventsByUserResponse" type="tns:getEventsByUserResponse"/>
 <xs:element name="getEventsHistoryByUser" type="tns:getEventsHistoryByUser"/>
@@ -40,6 +42,8 @@
 <xs:element name="getManagerEntitiesByEventResponse" type="tns:getManagerEntitiesByEventResponse"/>
 <xs:element name="getManagerEntitiesById" type="tns:getManagerEntitiesById"/>
 <xs:element name="getManagerEntitiesByIdResponse" type="tns:getManagerEntitiesByIdResponse"/>
+<xs:element name="getManagerEntitiesByIds" type="tns:getManagerEntitiesByIds"/>
+<xs:element name="getManagerEntitiesByIdsResponse" type="tns:getManagerEntitiesByIdsResponse"/>
 <xs:element name="getManagerEntitiesBySport" type="tns:getManagerEntitiesBySport"/>
 <xs:element name="getManagerEntitiesBySportResponse" type="tns:getManagerEntitiesBySportResponse"/>
 <xs:element name="getManagerEntitiesResponse" type="tns:getManagerEntitiesResponse"/>
@@ -54,8 +58,6 @@
 <xs:element name="getSports" type="tns:getSports"/>
 <xs:element name="getSportsResponse" type="tns:getSportsResponse"/>
 <xs:element name="getUnjoinedEvents" type="tns:getUnjoinedEvents"/>
-<xs:element name="getUnjoinedEventsByFilters" type="tns:getUnjoinedEventsByFilters"/>
-<xs:element name="getUnjoinedEventsByFiltersResponse" type="tns:getUnjoinedEventsByFiltersResponse"/>
 <xs:element name="getUnjoinedEventsResponse" type="tns:getUnjoinedEventsResponse"/>
 <xs:element name="getUserDetails" type="tns:getUserDetails"/>
 <xs:element name="getUserDetailsResponse" type="tns:getUserDetailsResponse"/>
@@ -113,6 +115,7 @@
       <xs:element minOccurs="0" name="gcmId" type="xs:string"/>
       <xs:element name="id" type="xs:int"/>
       <xs:element minOccurs="0" name="name" type="xs:string"/>
+      <xs:element minOccurs="0" name="settings" type="xs:string"/>
       <xs:element minOccurs="0" name="surname1" type="xs:string"/>
       <xs:element minOccurs="0" name="surname2" type="xs:string"/>
       <xs:element name="telephone" type="xs:int"/>
@@ -152,44 +155,6 @@
 <xs:complexType name="createSportResponse">
     <xs:sequence>
       <xs:element minOccurs="0" name="return" type="tns:result"/>
-    </xs:sequence>
-  </xs:complexType>
-<xs:complexType name="getUnjoinedEventsByFilters">
-    <xs:sequence>
-      <xs:element name="iduser" type="xs:int"/>
-      <xs:element name="idsport" type="xs:int"/>
-      <xs:element name="minplayers" type="xs:int"/>
-      <xs:element name="maxprice" type="xs:double"/>
-      <xs:element name="fromdate" type="xs:long"/>
-      <xs:element name="todate" type="xs:long"/>
-    </xs:sequence>
-  </xs:complexType>
-<xs:complexType name="getUnjoinedEventsByFiltersResponse">
-    <xs:sequence>
-      <xs:element minOccurs="0" name="return" type="tns:result"/>
-    </xs:sequence>
-  </xs:complexType>
-<xs:complexType name="event">
-    <xs:sequence>
-      <xs:element name="actualPlayers" type="xs:int"/>
-      <xs:element minOccurs="0" name="city" type="xs:string"/>
-      <xs:element name="endDate" type="xs:long"/>
-      <xs:element name="idCreator" type="xs:int"/>
-      <xs:element name="idEvent" type="xs:int"/>
-      <xs:element name="idReservation" type="xs:int"/>
-      <xs:element name="idSport" type="xs:int"/>
-      <xs:element name="joined" type="xs:boolean"/>
-      <xs:element name="latitude" type="xs:double"/>
-      <xs:element name="limitDate" type="xs:long"/>
-      <xs:element name="longitude" type="xs:double"/>
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="managerEntities" nillable="true" type="xs:int"/>
-      <xs:element name="maxPlayers" type="xs:int"/>
-      <xs:element name="maxPrice" type="xs:double"/>
-      <xs:element name="minPlayers" type="xs:int"/>
-      <xs:element name="range" type="xs:int"/>
-      <xs:element minOccurs="0" name="sportName" type="xs:string"/>
-      <xs:element name="startDate" type="xs:long"/>
-      <xs:element minOccurs="0" name="state" type="tns:states"/>
     </xs:sequence>
   </xs:complexType>
 <xs:complexType name="deleteFieldSport">
@@ -260,10 +225,54 @@
       <xs:element minOccurs="0" name="return" type="tns:result"/>
     </xs:sequence>
   </xs:complexType>
+<xs:complexType name="event">
+    <xs:sequence>
+      <xs:element name="actualPlayers" type="xs:int"/>
+      <xs:element minOccurs="0" name="city" type="xs:string"/>
+      <xs:element name="endDate" type="xs:long"/>
+      <xs:element name="idCreator" type="xs:int"/>
+      <xs:element name="idEvent" type="xs:int"/>
+      <xs:element name="idReservation" type="xs:int"/>
+      <xs:element name="idSport" type="xs:int"/>
+      <xs:element name="joined" type="xs:boolean"/>
+      <xs:element name="latitude" type="xs:double"/>
+      <xs:element name="limitDate" type="xs:long"/>
+      <xs:element name="longitude" type="xs:double"/>
+      <xs:element minOccurs="0" name="managerEntities">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="item" type="xs:int"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="maxPlayers" type="xs:int"/>
+      <xs:element name="maxPrice" type="xs:double"/>
+      <xs:element name="minPlayers" type="xs:int"/>
+      <xs:element name="range" type="xs:double"/>
+      <xs:element minOccurs="0" name="sportName" type="xs:string"/>
+      <xs:element name="startDate" type="xs:long"/>
+      <xs:element minOccurs="0" name="state" type="tns:states"/>
+    </xs:sequence>
+  </xs:complexType>
 <xs:complexType name="getManagerEntities">
     <xs:sequence/>
   </xs:complexType>
 <xs:complexType name="getManagerEntitiesResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="tns:result"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="getEventsByFilters">
+    <xs:sequence>
+      <xs:element name="iduser" type="xs:int"/>
+      <xs:element name="idsport" type="xs:int"/>
+      <xs:element name="minplayers" type="xs:int"/>
+      <xs:element name="maxprice" type="xs:double"/>
+      <xs:element name="fromdate" type="xs:long"/>
+      <xs:element name="todate" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="getEventsByFiltersResponse">
     <xs:sequence>
       <xs:element minOccurs="0" name="return" type="tns:result"/>
     </xs:sequence>
@@ -598,12 +607,23 @@
       <xs:element minOccurs="0" name="return" type="tns:result"/>
     </xs:sequence>
   </xs:complexType>
+<xs:complexType name="getManagerEntitiesByIds">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="idmanagerentities" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="getManagerEntitiesByIdsResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="tns:result"/>
+    </xs:sequence>
+  </xs:complexType>
 <xs:simpleType name="states">
     <xs:restriction base="xs:string">
       <xs:enumeration value="OPEN"/>
       <xs:enumeration value="RESERVED"/>
       <xs:enumeration value="COMPLETED"/>
       <xs:enumeration value="FINISHED"/>
+      <xs:enumeration value="CANCELED"/>
     </xs:restriction>
   </xs:simpleType>
 </xs:schema>

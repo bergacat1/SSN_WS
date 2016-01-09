@@ -8,14 +8,17 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
 import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.sql.DataSource;
+
+import org.jboss.logging.Logger;
+import org.jboss.logging.Logger.Level;
 
 import ssn.beans.Event;
 import ssn.beans.Field;
@@ -38,9 +41,10 @@ public class SSNWS {
 	private static final String SENDER_ID = "AIzaSyD2Z4HHOA3_rbUJVSHDcmPyJfs-JL9wv1g";
 	
 	@WebMethod
-	public Result<Integer> registerUser(@WebParam(name="user") User user)
+	public Result<User> registerUser(@WebParam(name="user") User user)
 	{
-		Result<Integer> result = new Result<>();
+		Logger.getLogger(this.getClass().getName()).log(Level.INFO, String.format("RegisterUser: %s", user.getEmail()));
+		Result<User> result = new Result<>();
 		try     
 		{
 			InitialContext cxt = new InitialContext();
@@ -56,19 +60,72 @@ public class SSNWS {
 				Statement stm = connection.createStatement(); 
 				ResultSet rs;
 				
-				rs = stm.executeQuery("select iduser from users where email = '" + user.getEmail() + "'");
+				rs = stm.executeQuery("select * from users where email = '" + user.getEmail() + "'");
 				if(rs.next()){
-					result.addData(new Integer(rs.getInt(1)));
-					stm.execute("update users set gcmid = '" + user.getGcmId() + "' where email = '" + user.getEmail() + "'");
+					User u = new User();					
+					u.setId(rs.getInt("iduser"));					
+					u.setEmail(rs.getString("email"));
+					u.setName(rs.getString("name"));
+					u.setSurname1(rs.getString("surname1"));
+					u.setSurname2(rs.getString("surname2"));
+					u.setType(rs.getInt("type"));
+					u.setUsername(rs.getString("username"));
+					u.setTelephone(rs.getInt("telephone"));
+					u.setCurrentAccount(rs.getInt("currentaccount"));
+					u.setGcmId(rs.getString("gcmid"));
+					u.setSettings(rs.getString("settings"));
+					if(!u.getGcmId().equals(user.getGcmId())){
+						stm.execute("update users set gcmid = '" + user.getGcmId() + "' where email = '" + user.getEmail() + "'");
+						u.setGcmId(user.getGcmId());
+					}
+					result.addData(u);						
 				}else{
-					String sql = "insert into users (type, email, username, name, surname1, surname2, telephone, currentaccount, gcmid) values "
+					String sql = "insert into users (type, email, username, name, surname1, surname2, telephone, currentaccount, gcmid, settings) values "
 							+ "(" + user.getType() + ",'" + user.getEmail() + "','" + user.getUsername() + "','" + user.getName() + "','" + user.getSurname1() 
-							+ "','" + user.getSurname2() + "'," + user.getTelephone() + "," + user.getCurrentAccount() + ",'" + user.getGcmId() + "')";
+							+ "','" + user.getSurname2() + "'," + user.getTelephone() + "," + user.getCurrentAccount() + ",'" + user.getGcmId() + "','"
+							+ user.getSettings() + "')";
 					stm.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
 					rs = stm.getGeneratedKeys();
 					rs.next();
-					result.addData(new Integer(rs.getInt(1)));
+					User u = new User();
+					u.setId(rs.getInt(1));
+					result.addData(u);
 				}
+				connection.close();
+				stm.close();
+			}   
+					
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+			result.setValid(false);
+			result.setError(e.getMessage());
+		}
+		return result;
+	}
+	
+	@WebMethod
+	public Result<User> setUserSettings(@WebParam(name="user") User user)
+	{
+		Logger.getLogger(this.getClass().getName()).log(Level.INFO, String.format("SetUserSettings: %s", user.getId()));
+		Result<User> result = new Result<>();
+		try     
+		{
+			InitialContext cxt = new InitialContext();
+			if ( cxt != null ) 
+			{			
+				DataSource ds = (DataSource) cxt.lookup( "java:jboss/PostgreSQL/SSN");
+				
+				if ( ds == null ) 
+				{
+			 		System.out.print("Data source no trobat");
+				}
+				Connection connection = ds.getConnection();
+				Statement stm = connection.createStatement(); 				
+				
+				String sql = "update users set settings = " + user.getSettings() + " where iduser = " + user.getId();
+				stm.executeUpdate(sql);
+				
 				connection.close();
 				stm.close();
 			}   
@@ -134,6 +191,7 @@ public class SSNWS {
 	@WebMethod
 	public Result<User> getUsersByEvent(@WebParam(name="idevent") int idEvent)
 	{
+		Logger.getLogger(this.getClass().getName()).log(Level.INFO, String.format("GetUsersByEvent: %d", idEvent));
 		Result<User> result = new Result<>();
 		try     	
 		{
@@ -220,6 +278,7 @@ public class SSNWS {
 	@WebMethod
 	public Result<Integer> logoutUser(@WebParam(name="userid") int userid)
 	{
+		Logger.getLogger(this.getClass().getName()).log(Level.INFO, String.format("LogoutUser: %d", userid));
 		Result<Integer> result = new Result<Integer>();
 		try     
 		{
@@ -291,6 +350,7 @@ public class SSNWS {
 	@WebMethod
 	public Result<Sport> getSports()
 	{
+		Logger.getLogger(this.getClass().getName()).log(Level.INFO, "GetSports");
 		Result<Sport> result = new Result<>();
 		try     	
 		{
@@ -375,6 +435,7 @@ public class SSNWS {
 	@WebMethod
 	public Result<Integer> createEvent(@WebParam(name="event") Event event)
 	{
+		Logger.getLogger(this.getClass().getName()).log(Level.INFO, String.format("CreateEvent::  Sport: %s  User: %d", event.getSportName(), event.getIdCreator()));
 		Result<Integer> result = new Result<>();
 		Connection connection = null;
 		Statement stm = null;
@@ -404,11 +465,11 @@ public class SSNWS {
 					}
 				}
 				String sql = "insert into events (idcreator, idsport, minplayers, maxplayers, startdatetime, enddatetime, city, latitude,"
-						+ " longitude, range, maxprice) values "
+						+ " longitude, range, maxprice, limitdatetime, canceled) values "
 						+ "(" + event.getIdCreator() + "," + event.getIdSport() + "," + (event.getMinPlayers() == 0 ? sportMinPlayers : event.getMinPlayers()) 
 						+ "," + (event.getMaxPlayers() == 0 ? sportMaxPlayers : event.getMaxPlayers()) + ",'" + df.format(new Date(event.getStartDate()))
 						+ "','" + df.format(new Date(event.getEndDate())) + "','" + event.getCity() + "'," + event.getLatitude() + "," + event.getLongitude() 
-						+ "," + event.getRange() + "," + event.getMaxPrice() + ")";
+						+ "," + event.getRange() + "," + event.getMaxPrice() + ",'" + df.format(new Date(event.getLimitDate())) + "','FALSE')";
 				stm.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
 				rs = stm.getGeneratedKeys();
 				rs.next();
@@ -425,7 +486,7 @@ public class SSNWS {
 				if(rs.next() && rs.getInt("type") == 0)
 					stm.executeUpdate("insert into eventusers values (" + idEvent + "," + event.getIdCreator() + ")");
 				
-				rs = stm.executeQuery("select gcmid from users");
+				rs = stm.executeQuery("select gcmid from users where gcmid <> '' and substring(settings, 5, 1) = '1'");
 				List<String> usersToNotify = new ArrayList<>();
 				while(rs.next())
 					if(rs.getString("gcmid") != "")
@@ -475,7 +536,7 @@ public class SSNWS {
 				
 				Connection connection = ds.getConnection();
 				Statement stm = connection.createStatement(); 
-				ResultSet rs = stm.executeQuery("select e.*, s.name from events e join sports s on (e.idsport = s.idsport) where userid <> " + userId);
+				ResultSet rs = stm.executeQuery("select e.*, s.name from events e join sports s on (e.idsport = s.idsport) where canceled = FALSE userid <> " + userId);
 				
 				Event e;
 				while(rs.next()){					
@@ -494,6 +555,8 @@ public class SSNWS {
 					e.setMaxPlayers(rs.getInt("maxplayers"));
 					e.setMaxPrice(rs.getDouble("maxprice"));
 					e.setLimitDate(df.parse(rs.getString("limitdatetime")).getTime());
+					if(rs.getBoolean("canceled"))
+						e.setState(Event.States.CANCELED);
 					result.addData(e);
 				}
 				
@@ -536,10 +599,11 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result<Event> getUnjoinedEventsByFilters(@WebParam(name="iduser") int idUser, @WebParam(name="idsport") int idSport,@WebParam(name="minplayers")  int minPlayers,
+	public Result<Event> getEventsByFilters(@WebParam(name="iduser") int idUser, @WebParam(name="idsport") int idSport,@WebParam(name="minplayers")  int minPlayers,
 										@WebParam(name="maxprice") double maxPrice,@WebParam(name="fromdate")  long fromDate,
 										@WebParam(name="todate")  long toDate)
 	{
+		Logger.getLogger(this.getClass().getName()).log(Level.INFO, String.format("GetEventsByFilters: %d", idUser));
 		Result<Event> result = new Result<>();
 		try     	
 		{
@@ -557,8 +621,8 @@ public class SSNWS {
 				Statement stm = connection.createStatement(); 
 				StringBuilder sb = new StringBuilder();
 				sb.append("select e.*, s.name from events e join sports s on (e.idsport = s.idsport) ");
-				sb.append("where not exists (select * from eventusers eu where eu.idevent = e.idevent and eu.iduser = " + idUser + ")");
-				sb.append(" and e.limitdatetime > current_timestamp");
+				sb.append("where e.limitdatetime > current_timestamp and canceled = FALSE and ");
+				sb.append("e.maxplayers > (select count(*) from eventusers eu where eu.idevent = e.idevent)");
 				if(idSport > 0)
 					sb.append(" and e.idsport = " + idSport);
 				if(minPlayers > 0)
@@ -592,6 +656,8 @@ public class SSNWS {
 				}
 				
 				for (Event event : result.getData()) {
+					rs = stm.executeQuery("select * from eventusers where idevent = " + event.getIdEvent() + " and iduser = " + idUser);
+					event.setJoined(rs.next());
 					rs = stm.executeQuery("select count(*) as players from eventusers where idevent = " + event.getIdEvent());
 					if(rs.next()){
 						event.setActualPlayers(rs.getInt("players"));
@@ -601,6 +667,8 @@ public class SSNWS {
 					rs = stm.executeQuery("select count(*) as numusers from eventusers where idevent = " + event.getIdEvent());
 					if(rs.next()){
 						int numUsers = rs.getInt("numusers");
+//						Logger.getLogger(this.getClass().getName()).log(Level.INFO, String.format("Event: %d  NumUsers: %d  MaxUsers: %d", 
+//								event.getIdEvent(), numUsers, event.getMaxPlayers()));
 						if(numUsers == event.getMaxPlayers())
 							event.setState(Event.States.COMPLETED);
 						else 
@@ -631,6 +699,7 @@ public class SSNWS {
 	@WebMethod
 	public Result<Event> getEventById(@WebParam(name="idevent") int idEvent, @WebParam(name="iduser") int idUser)
 	{
+		Logger.getLogger(this.getClass().getName()).log(Level.INFO, String.format("GetEventById: %d  User: %d", idEvent, idUser));
 		Result<Event> result = new Result<>();
 		try     	
 		{
@@ -664,25 +733,34 @@ public class SSNWS {
 					e.setMinPlayers(rs.getInt("minplayers"));
 					e.setMaxPlayers(rs.getInt("maxplayers"));
 					e.setMaxPrice(rs.getDouble("maxprice"));
-					e.setLimitDate(df.parse(rs.getString("limitdatetime")).getTime());					
+					e.setLimitDate(df.parse(rs.getString("limitdatetime")).getTime());
+					if(rs.getBoolean("canceled"))
+						e.setState(Event.States.CANCELED);
 					rs = stm.executeQuery("select * from eventusers where idevent = " + idEvent + " and iduser = " + idUser);
 					if(rs.next())
 						e.setJoined(true);
-					rs = stm.executeQuery("select count(*) as numusers from eventusers where idevent = " + e.getIdEvent());
-					if(rs.next()){
-						int numUsers = rs.getInt("numusers");
-						if(numUsers == e.getMaxPlayers())
-							e.setState(Event.States.COMPLETED);
-						else 
+					if(e.getState() != Event.States.CANCELED){
+						rs = stm.executeQuery("select count(*) as numusers from eventusers where idevent = " + e.getIdEvent());
+						if(rs.next()){
+							int numUsers = rs.getInt("numusers");
+							if(numUsers == e.getMaxPlayers())
+								e.setState(Event.States.COMPLETED);
+							else 
+								e.setState(Event.States.OPEN);
+						}else
 							e.setState(Event.States.OPEN);
-					}else
-						e.setState(Event.States.OPEN);
-					
-					rs = stm.executeQuery("select idreservation from reservations where idevent = " + e.getIdEvent());
-					if(rs.next()){
-						e.setState(Event.States.RESERVED);
-						e.setIdReservation(rs.getInt("idreservation"));
+						
+						rs = stm.executeQuery("select idreservation from reservations where idevent = " + e.getIdEvent());
+						if(rs.next()){
+							e.setState(Event.States.RESERVED);
+							e.setIdReservation(rs.getInt("idreservation"));
+						}
 					}
+					/*List<Integer> managerEntities = new ArrayList<>();
+					rs = stm.executeQuery("select idmanagerentity from eventmanagerentities where idevent = " + e.getIdEvent());
+					while(rs.next())
+						managerEntities.add(rs.getInt("idmanagerentity"));
+					e.setManagerEntities(managerEntities);*/
 					result.addData(e);
 				}
 
@@ -702,6 +780,7 @@ public class SSNWS {
 	@WebMethod
 	public Result<Event> getEventsByUser(@WebParam(name="iduser") int idUser)
 	{
+		Logger.getLogger(this.getClass().getName()).log(Level.INFO, String.format("GetEventsByUser: %d", idUser));
 		Result<Event> result = new Result<>();
 		try     	
 		{
@@ -718,7 +797,7 @@ public class SSNWS {
 				Connection connection = ds.getConnection();
 				Statement stm = connection.createStatement(); 
 				ResultSet rs = stm.executeQuery("select e.*, eu.*, s.name from events e join eventusers eu on (e.idevent = eu.idevent), sports s where"
-						+ " s.idsport = e.idsport and e.startdatetime > current_timestamp and eu.iduser = " + idUser);
+						+ " s.idsport = e.idsport and e.startdatetime > current_timestamp and canceled = FALSE and eu.iduser = " + idUser);
 				
 				Event e;
 				while(rs.next()){					
@@ -751,6 +830,8 @@ public class SSNWS {
 					rs = stm.executeQuery("select count(*) as numusers from eventusers where idevent = " + event.getIdEvent());
 					if(rs.next()){
 						int numUsers = rs.getInt("numusers");
+						Logger.getLogger(this.getClass().getName()).log(Level.INFO, String.format("Event: %d  NumUsers: %d  MaxUsers: %d", 
+						event.getIdEvent(), numUsers, event.getMaxPlayers()));
 						if(numUsers == event.getMaxPlayers())
 							event.setState(Event.States.COMPLETED);
 						else 
@@ -781,6 +862,7 @@ public class SSNWS {
 	@WebMethod
 	public Result<Event> getEventsHistoryByUser(@WebParam(name="iduser") int idUser)
 	{
+		Logger.getLogger(this.getClass().getName()).log(Level.INFO, String.format("GetEventsHistoryByUser: %d", idUser));
 		Result<Event> result = new Result<>();
 		try     	
 		{
@@ -796,7 +878,7 @@ public class SSNWS {
 				
 				Connection connection = ds.getConnection();
 				Statement stm = connection.createStatement(); 
-				ResultSet rs = stm.executeQuery("select e.*, eu.*, s.name from events e join eventusers eu on (e.idevent = eu.idevent), sports s where s.idsport = e.idsport and e.startdatetime <= current_timestamp and eu.iduser = " + idUser);
+				ResultSet rs = stm.executeQuery("select e.*, eu.*, s.name from events e join eventusers eu on (e.idevent = eu.idevent), sports s where s.idsport = e.idsport and (e.startdatetime <= current_timestamp or canceled = TRUE) and eu.iduser = " + idUser);
 				
 				Event e;
 				while(rs.next()){					
@@ -815,6 +897,10 @@ public class SSNWS {
 					e.setMaxPlayers(rs.getInt("maxplayers"));
 					e.setMaxPrice(rs.getDouble("maxprice"));
 					e.setLimitDate(df.parse(rs.getString("limitdatetime")).getTime());
+					if(rs.getBoolean("canceled"))
+						e.setState(Event.States.CANCELED);
+					else
+						e.setState(Event.States.FINISHED);
 					result.addData(e);
 				}
 
@@ -834,6 +920,7 @@ public class SSNWS {
 	@WebMethod
 	public Result joinEvent(@WebParam(name="iduser") int idUser, @WebParam(name="idevent") int idEvent)
 	{
+		Logger.getLogger(this.getClass().getName()).log(Level.INFO, String.format("JoinEvent: %d  User: %d", idEvent, idUser));
 		Result<Integer> result = new Result<>();
 		try     
 		{
@@ -846,23 +933,14 @@ public class SSNWS {
 				{
 			 		System.out.print("Data source no trobat");
 				}
+				int notificationType = -1;
 				Connection connection = ds.getConnection();
 				Statement stm = connection.createStatement(); 
 				String sql = "insert into eventusers values "
 						+ "(" + idEvent + "," + idUser + ")";
 				stm.executeUpdate(sql);
-				
-				ResultSet rs = stm.executeQuery("select gcmid from users u join eventusers eu on (u.iduser = eu.iduser) where eu.idevent = " + idEvent
-													+ " and eu.iduser <> " + idUser);
-				List<String> usersToNotify = new ArrayList<>();
-				while(rs.next())
-					if(rs.getString("gcmid") != "")
-						usersToNotify.add(rs.getString("gcmid"));
-				if(!usersToNotify.isEmpty())
-					sendPushNotification(usersToNotify, idEvent, 1);
-				
 				//RESERVA
-				rs = stm.executeQuery("select minplayers from events where idevent = " + idEvent);
+				ResultSet rs = stm.executeQuery("select minplayers from events where idevent = " + idEvent);
 				rs.next();
 				int minPlayers = rs.getInt("minplayers");
 				rs = stm.executeQuery("select count(*) as players from eventusers where idevent = " + idEvent);
@@ -888,10 +966,29 @@ public class SSNWS {
 							r.setConfirmed(false);
 							r.setType(0);
 							addReservation(r);
+							notificationType = 3;
+						}else{
+							stm.executeUpdate("update events set canceled = TRUE where idevent = " + idEvent);
+							notificationType = 2;
 						}
 					}
+				}else
+					notificationType = 1;
+
+				if (notificationType != -1) {
+					StringBuilder sb = new StringBuilder();
+					sb.append("select u.gcmid from users u join eventusers eu on (u.iduser = eu.iduser) where u.gcmid <> '' eu.idevent = "
+									+ idEvent + " and eu.iduser <> " + idUser);
+					if(notificationType == 1) sb.append(" and substring(u.settings, 6, 1) = '1'");
+					rs = stm.executeQuery(sb.toString());
+					List<String> usersToNotify = new ArrayList<>();
+					while (rs.next())
+						if (rs.getString("gcmid") != "")
+							usersToNotify.add(rs.getString("gcmid"));
+					if (!usersToNotify.isEmpty())
+						sendPushNotification(usersToNotify, idEvent,
+								notificationType);
 				}
-				
 				connection.close();
 				stm.close();
 			}   
@@ -908,6 +1005,7 @@ public class SSNWS {
 	@WebMethod
 	public Result leaveEvent(@WebParam(name="iduser") int idUser, @WebParam(name="idevent") int idEvent)
 	{
+		Logger.getLogger(this.getClass().getName()).log(Level.INFO, String.format("LeaveEvent: %d  User: %d", idEvent, idUser));
 		Result<Integer> result = new Result<>();
 		try     
 		{
@@ -1063,6 +1161,7 @@ public class SSNWS {
 	@WebMethod
 	public Result<Integer> addReservation(@WebParam(name="reservation") Reservation reservation)
 	{
+		Logger.getLogger(this.getClass().getName()).log(Level.INFO, String.format("AddReservation::  Field: %d  Event:", reservation.getIdField(), reservation.getIdEvent()));
 		Result<Integer> result = new Result<>();
 		try     
 		{
@@ -1732,6 +1831,20 @@ public class SSNWS {
 	}
 	
 	@WebMethod
+	public Result<ManagerEntity> getManagerEntitiesByIds(@WebParam(name="idmanagerentities")List<Integer> ids){
+		Logger.getLogger(this.getClass().getName()).log(Level.INFO, String.format("GetManagerEntitiesByIds: %d", ids.size()));		
+		Result<ManagerEntity> result = new Result<>();
+		Result<ManagerEntity> auxResult;
+		for (Integer id : ids) {
+			auxResult = getManagerEntitiesById(id);
+			if(auxResult.isValid())
+				result.addData(auxResult.getData().get(0));
+		}
+		
+		return result;
+	}
+	
+	@WebMethod
 	public Result<ManagerEntity> getManagerEntitiesById(@WebParam(name="idmanagerentity") int idManagerEntity)
 	{
 		Result<ManagerEntity> result = new Result<>();
@@ -1928,6 +2041,14 @@ public class SSNWS {
 	private boolean sendPushNotification(@WebParam(name="gcmids") List<String> gcmIds, @WebParam(name="idevent") int idEvent, 
 											@WebParam(name="type") int type)
 	{
+		/**
+		 * TYPES:
+		 *   0: Nou Event
+		 *   1: Nou Membre a event
+		 *   2: Event Cancelat
+		 *   3: Reserva feta
+		 * 
+		 */
 		Sender sender = new Sender(SENDER_ID);
 		Message message = new Message.Builder()
 								.collapseKey("collapseKEy")
@@ -1935,7 +2056,6 @@ public class SSNWS {
 								.delayWhileIdle(true)
 								.addData("idEvent", String.valueOf(idEvent))
 								.addData("type", String.valueOf(type))
-								.addData("msg", type == 0 ? "Se ha creado un nuevo evento!" : "Se ha unido un usuario a uno de tus eventos!")
 								.build();
 		
 		try {

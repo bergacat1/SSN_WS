@@ -2,8 +2,11 @@ package ssn.beans;
 
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+
 public class Event {
-	public enum States {OPEN, RESERVED, COMPLETED, FINISHED}
+	public enum States {OPEN, RESERVED, COMPLETED, FINISHED, CANCELED}
 	private int idEvent;
 	private int idCreator;
 	private int idSport;
@@ -16,7 +19,7 @@ public class Event {
 	private String city;
 	private double latitude;
 	private double longitude;
-	private int range;
+	private double range;
 	private double maxPrice;
 	private List<Integer> managerEntities;
 	private boolean joined;
@@ -84,12 +87,14 @@ public class Event {
 	public void setLongitude(double longitude) {
 		this.longitude = longitude;
 	}
-	public int getRange() {
+	public double getRange() {
 		return range;
 	}
-	public void setRange(int range) {
+	public void setRange(double range) {
 		this.range = range;
 	}
+    @XmlElement( name="item" )
+    @XmlElementWrapper( name="managerEntities" )
 	public List<Integer> getManagerEntities() {
 		return managerEntities;
 	}

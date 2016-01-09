@@ -12,6 +12,7 @@ public class User {
 	private int telephone;
 	private int type;
 	private String gcmId;
+	private String settings;
 	public int getId() {
 		return id;
 	}
@@ -71,6 +72,12 @@ public class User {
 	}
 	public void setGcmId(String gcmId) {
 		this.gcmId = gcmId;
+	}
+	public String getSettings() {
+		return settings;
+	}
+	public void setSettings(String settings) {
+		this.settings = settings;
 	}
 	
 }

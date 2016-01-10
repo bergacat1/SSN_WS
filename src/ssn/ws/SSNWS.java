@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.ejb.Schedule;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
@@ -87,9 +88,8 @@ public class SSNWS {
 					stm.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
 					rs = stm.getGeneratedKeys();
 					rs.next();
-					User u = new User();
-					u.setId(rs.getInt(1));
-					result.addData(u);
+					user.setId(rs.getInt(1));
+					result.addData(user);
 				}
 				connection.close();
 				stm.close();
@@ -105,10 +105,10 @@ public class SSNWS {
 	}
 	
 	@WebMethod
-	public Result<User> setUserSettings(@WebParam(name="user") User user)
+	public Result setUserSettings(@WebParam(name="user") User user)
 	{
 		Logger.getLogger(this.getClass().getName()).log(Level.INFO, String.format("SetUserSettings: %s", user.getId()));
-		Result<User> result = new Result<>();
+		Result result = new Result<>();
 		try     
 		{
 			InitialContext cxt = new InitialContext();
@@ -123,7 +123,7 @@ public class SSNWS {
 				Connection connection = ds.getConnection();
 				Statement stm = connection.createStatement(); 				
 				
-				String sql = "update users set settings = " + user.getSettings() + " where iduser = " + user.getId();
+				String sql = "update users set username = '" + user.getUsername() + "', settings = '" + user.getSettings() + "' where iduser = " + user.getId();
 				stm.executeUpdate(sql);
 				
 				connection.close();
@@ -294,7 +294,7 @@ public class SSNWS {
 				
 				Connection connection = ds.getConnection();
 				Statement stm = connection.createStatement(); 
-				String sql = "update user set gcmid = '' where iduser = " + userid;
+				String sql = "update users set gcmid = '' where iduser = " + userid;
 				stm.executeUpdate(sql);	
 				result.addData(userid);			
 				connection.close();
@@ -977,7 +977,7 @@ public class SSNWS {
 
 				if (notificationType != -1) {
 					StringBuilder sb = new StringBuilder();
-					sb.append("select u.gcmid from users u join eventusers eu on (u.iduser = eu.iduser) where u.gcmid <> '' eu.idevent = "
+					sb.append("select u.gcmid from users u join eventusers eu on (u.iduser = eu.iduser) where u.gcmid <> '' and eu.idevent = "
 									+ idEvent + " and eu.iduser <> " + idUser);
 					if(notificationType == 1) sb.append(" and substring(u.settings, 6, 1) = '1'");
 					rs = stm.executeQuery(sb.toString());

@@ -8,10 +8,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
-import javax.ejb.Schedule;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
@@ -38,7 +36,7 @@ import com.google.android.gcm.server.Sender;
 @WebService
 public class SSNWS {
 	
-	private static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssX");
+	public static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssX");
 	private static final String SENDER_ID = "AIzaSyD2Z4HHOA3_rbUJVSHDcmPyJfs-JL9wv1g";
 	
 	@WebMethod
@@ -940,58 +938,8 @@ public class SSNWS {
 						+ "(" + idEvent + "," + idUser + ")";
 				stm.executeUpdate(sql);
 				//RESERVA
-				ResultSet rs = stm.executeQuery("select minplayers from events where idevent = " + idEvent);
-				rs.next();
-				int minPlayers = rs.getInt("minplayers");
-				rs = stm.executeQuery("select count(*) as players from eventusers where idevent = " + idEvent);
-				rs.next();
-				if(rs.getInt("players") >= minPlayers)
-				{
-					rs = stm.executeQuery("select * from reservations where idevent = " + idEvent);
-					if(!rs.next())
-					{
-						Event e = getEventById(idEvent, -1).getData().get(0);
-						sql = "select f.idfield from sportfield sf, fields f, managerentity me where sf.idsport = " + e.getIdSport() +
-								" and sf.idfield = f.idfield and f.idmanagerentity = me.idmanagerentity and (me.city = '" + e.getCity() + "' or "
-								+ "((" + e.getLatitude() + " - me.latitude)^2 + (" + e.getLongitude() + " - me.longitude)^2) < " + e.getRange() + "^2)" 
-								+ "and sf.hourprice <= " + e.getMaxPrice() + " and not exists (select * from reservations r where r.idfield = sf.idfield and startdate < '" + df.format(new Date(e.getEndDate())) +
-								"' and enddate > '" + df.format(new Date(e.getStartDate())) + "') order by sf.hourprice asc limit 1";
-						rs = stm.executeQuery(sql);
-						if (rs.next()){
-							Reservation r = new Reservation();
-							r.setIdEvent(idEvent);
-							r.setIdField(rs.getInt("idfield"));
-							r.setStartDate(e.getStartDate());
-							r.setEndDate(e.getEndDate());
-							r.setConfirmed(false);
-							r.setType(0);
-							addReservation(r);
-							notificationType = 3;
-						}else{
-							stm.executeUpdate("update events set canceled = TRUE where idevent = " + idEvent);
-							notificationType = 2;
-						}
-					}
-				}else
-					notificationType = 1;
-
-				if (notificationType != -1) {
-					StringBuilder sb = new StringBuilder();
-					sb.append("select u.gcmid from users u join eventusers eu on (u.iduser = eu.iduser) where u.gcmid <> '' and eu.idevent = "
-									+ idEvent + " and eu.iduser <> " + idUser);
-					if(notificationType == 1) sb.append(" and substring(u.settings, 6, 1) = '1'");
-					rs = stm.executeQuery(sb.toString());
-					List<String> usersToNotify = new ArrayList<>();
-					while (rs.next())
-						if (rs.getString("gcmid") != "")
-							usersToNotify.add(rs.getString("gcmid"));
-					if (!usersToNotify.isEmpty())
-						sendPushNotification(usersToNotify, idEvent,
-								notificationType);
-				}
-				connection.close();
-				stm.close();
-			}   
+			}
+				
 					
 		}catch(Exception e)
 		{
@@ -2038,8 +1986,7 @@ public class SSNWS {
 		return result;
 	}
 	
-	private boolean sendPushNotification(@WebParam(name="gcmids") List<String> gcmIds, @WebParam(name="idevent") int idEvent, 
-											@WebParam(name="type") int type)
+	public static void sendPushNotification(List<String> gcmIds, int idEvent, int type)
 	{
 		/**
 		 * TYPES:
@@ -2065,9 +2012,7 @@ public class SSNWS {
 			System.out.println("Notificació enviada");
 		} catch (Exception e) {
 			e.printStackTrace();
-			return false;
 		}
-		return false;
 
 	}
 }

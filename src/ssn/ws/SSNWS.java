@@ -465,7 +465,7 @@ public class SSNWS {
 				if(!event.getManagerEntities().isEmpty()){
 					rs = stm.executeQuery("select city from managerentity where idmanagerentity = " + event.getManagerEntities().get(0));
 					if(rs.next())
-						event.setCity(rs.getString("city"));
+						event.setCity(rs.getString("city") + "...");
 				}
 				String sql = "insert into events (idcreator, idsport, minplayers, maxplayers, startdatetime, enddatetime, city, latitude,"
 						+ " longitude, range, maxprice, limitdatetime, canceled) values "

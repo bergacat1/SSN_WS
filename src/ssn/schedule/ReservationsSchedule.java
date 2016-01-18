@@ -73,8 +73,8 @@ public class ReservationsSchedule {
 					sql = "select f.idfield from sportfield sf, fields f, managerentity me where sf.idsport = " + e.getIdSport() +
 							" and sf.idfield = f.idfield and f.idmanagerentity = me.idmanagerentity and (me.city = '" + e.getCity() + "' or "
 							+ "((" + e.getLatitude() + " - me.latitude)^2 + (" + e.getLongitude() + " - me.longitude)^2) < " + e.getRange() + "^2)" 
-							+ "and sf.hourprice <= " + e.getMaxPrice() + " and not exists "
-							+ "(select * from reservations r where r.idfield = sf.idfield and startdate < '" 
+							+ "and sf.hourprice <= " + e.getMaxPrice() + "/(select count(*) from eventusers where idevent = " + idEvent 
+							+ " and not exists (select * from reservations r where r.idfield = sf.idfield and startdate < '" 
 							+ SSNWS.df.format(new Date(e.getEndDate())) +
 							"' and enddate > '" + SSNWS.df.format(new Date(e.getStartDate())) + "') order by sf.hourprice asc";
 					rs = stm.executeQuery(sql);

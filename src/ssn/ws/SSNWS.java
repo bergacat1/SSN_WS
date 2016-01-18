@@ -462,6 +462,11 @@ public class SSNWS {
 						sportMaxPlayers = rs.getInt("maxplayers");
 					}
 				}
+				if(!event.getManagerEntities().isEmpty()){
+					rs = stm.executeQuery("select city from managerentity where idmanagerentity = " + event.getManagerEntities().get(0));
+					if(rs.next())
+						event.setCity(rs.getString("city"));
+				}
 				String sql = "insert into events (idcreator, idsport, minplayers, maxplayers, startdatetime, enddatetime, city, latitude,"
 						+ " longitude, range, maxprice, limitdatetime, canceled) values "
 						+ "(" + event.getIdCreator() + "," + event.getIdSport() + "," + (event.getMinPlayers() == 0 ? sportMinPlayers : event.getMinPlayers()) 
@@ -484,7 +489,7 @@ public class SSNWS {
 				if(rs.next() && rs.getInt("type") == 0)
 					stm.executeUpdate("insert into eventusers values (" + idEvent + "," + event.getIdCreator() + ")");
 				
-				rs = stm.executeQuery("select gcmid from users where gcmid <> '' and substring(settings, 5, 1) = '1'");
+				rs = stm.executeQuery("select gcmid from users where gcmid <> '' and substring(settings, 2, 1) = '1' and iduser <> " + event.getIdCreator());
 				List<String> usersToNotify = new ArrayList<>();
 				while(rs.next())
 					if(rs.getString("gcmid") != "")
@@ -621,6 +626,7 @@ public class SSNWS {
 				sb.append("select e.*, s.name from events e join sports s on (e.idsport = s.idsport) ");
 				sb.append("where e.limitdatetime > current_timestamp and canceled = FALSE and ");
 				sb.append("e.maxplayers > (select count(*) from eventusers eu where eu.idevent = e.idevent)");
+				sb.append(" and not exists (select * from eventusers eu where eu.idevent = e.idevent and eu.iduser = " + idUser + ")");
 				if(idSport > 0)
 					sb.append(" and e.idsport = " + idSport);
 				if(minPlayers > 0)
@@ -734,6 +740,9 @@ public class SSNWS {
 					e.setLimitDate(df.parse(rs.getString("limitdatetime")).getTime());
 					if(rs.getBoolean("canceled"))
 						e.setState(Event.States.CANCELED);
+					rs = stm.executeQuery("select * from eventmanagerentities where idevent = " + e.getIdEvent());
+					if(e.getRange() != 0 || rs.next())
+						e.setCity("");
 					rs = stm.executeQuery("select * from eventusers where idevent = " + idEvent + " and iduser = " + idUser);
 					if(rs.next())
 						e.setJoined(true);
@@ -754,11 +763,7 @@ public class SSNWS {
 							e.setIdReservation(rs.getInt("idreservation"));
 						}
 					}
-					/*List<Integer> managerEntities = new ArrayList<>();
-					rs = stm.executeQuery("select idmanagerentity from eventmanagerentities where idevent = " + e.getIdEvent());
-					while(rs.next())
-						managerEntities.add(rs.getInt("idmanagerentity"));
-					e.setManagerEntities(managerEntities);*/
+					
 					result.addData(e);
 				}
 
@@ -931,13 +936,18 @@ public class SSNWS {
 				{
 			 		System.out.print("Data source no trobat");
 				}
-				int notificationType = -1;
 				Connection connection = ds.getConnection();
 				Statement stm = connection.createStatement(); 
 				String sql = "insert into eventusers values "
 						+ "(" + idEvent + "," + idUser + ")";
 				stm.executeUpdate(sql);
-				//RESERVA
+				ResultSet rs = stm.executeQuery("select gcmid from users where gcmid <> '' and substring(settings, 5, 1) = '1' and iduser <> " + idUser);
+				List<String> usersToNotify = new ArrayList<>();
+				while(rs.next())
+					if(rs.getString("gcmid") != "")
+						usersToNotify.add(rs.getString("gcmid"));
+				if(!usersToNotify.isEmpty())
+					sendPushNotification(usersToNotify, idEvent, 1);	
 			}
 				
 					
@@ -1192,8 +1202,8 @@ public class SSNWS {
 					r.setIdReservation(rs.getInt("idreservation"));
 					r.setIdEvent(rs.getInt("idevent"));
 					r.setIdField(rs.getInt("idfield"));
-					r.setStartDate(df.parse(rs.getString("startdatetime")).getTime());
-					r.setEndDate(df.parse(rs.getString("enddatetime")).getTime());
+					r.setStartDate(df.parse(rs.getString("startdate")).getTime());
+					r.setEndDate(df.parse(rs.getString("enddate")).getTime());
 					r.setConfirmed(rs.getBoolean("comfirmed"));
 					r.setType(rs.getInt("type"));
 					result.addData(r);
@@ -1915,9 +1925,20 @@ public class SSNWS {
 				
 				Connection connection = ds.getConnection();
 				Statement stm = connection.createStatement(); 
-				ResultSet rs = stm.executeQuery("select * from managerentity me join eventmanagerentities eme on (me.idmanagerentity = eme.idmanagerentity)"
-						+ "where idevent = " + idEvent);
-				
+				ResultSet rs;
+				rs = stm.executeQuery("select idfield from reservations where idevent = " + idEvent);
+				if(rs.next())
+				{
+					int idField = rs.getInt("idfield");
+					rs = stm.executeQuery("select me.* from managerentity me, fields f where me.idmanagerentity = f.idmanagerentity and f.idfield = " 
+								+ idField);
+				}
+				else
+				{
+					rs = stm.executeQuery("select * from managerentity me join eventmanagerentities eme on (me.idmanagerentity = eme.idmanagerentity)"
+							+ "where idevent = " + idEvent);
+				}
+					
 				ManagerEntity me;
 				while(rs.next()){					
 					me = new ManagerEntity();
@@ -1934,6 +1955,7 @@ public class SSNWS {
 					me.setWeb(rs.getString("email"));
 					result.addData(me);
 				}
+				
 
 				connection.close();
 				stm.close();
